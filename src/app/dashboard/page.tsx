@@ -2,8 +2,6 @@
 
 import { TopBar } from "./components/TopBar";
 import { StatCards } from "./components/StatCards";
-import { ActivityGraph } from "./charts/ActivityGraph";
-import { ActionsChart } from "./charts/Actions";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Loading } from "@/components/Loading";
@@ -65,17 +63,6 @@ export default function DashboardPage() {
               users={metrics?.card_data?.total_users}
               employees={metrics?.card_data?.total_operators}
             />
-
-            {metrics?.activity_data?.activity_of_this_month?.length > 0 && (
-              <div className="flex flex-col lg:flex-row lg:justify-between gap-4 mt-4">
-                <ActivityGraph
-                  data={metrics?.activity_data?.activity_of_this_month}
-                />
-                <ActionsChart
-                  data={metrics?.activity_data?.activity_of_this_month}
-                />
-              </div>
-            )}
           </div>
         </div>
       )}
