@@ -20,6 +20,7 @@ import {
   GraduationCap,
   FileText,
   UserCog,
+  Shield,
 } from "lucide-react";
 import {
   Sidebar as ShadcnSidebar,
@@ -111,6 +112,13 @@ const Sidebar = () => {
       name: "reports",
       url: "/dashboard/reports",
       icon: AreaChart,
+      roles: [UserRoles.ADMIN, UserRoles.SISTEM_MANAGER],
+    },
+    {
+      title: "Auditoria",
+      name: "audit",
+      url: "/dashboard/audit",
+      icon: Shield,
       roles: [UserRoles.ADMIN, UserRoles.SISTEM_MANAGER],
     },
     {

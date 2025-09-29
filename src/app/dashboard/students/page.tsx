@@ -122,7 +122,7 @@ export default function StudentsPage() {
 
   return (
     <motion.div
-      className="container mx-auto p-6 space-y-8"
+      className="mx-auto p-6 space-y-8"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -184,7 +184,7 @@ export default function StudentsPage() {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
           <Input
-            placeholder="Buscar por nome, email, matrícula ou curso..."
+            placeholder="Buscar por nome, email, Codigo de Estudante ou curso..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10"

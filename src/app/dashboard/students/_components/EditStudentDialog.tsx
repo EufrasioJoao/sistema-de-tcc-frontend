@@ -49,7 +49,12 @@ interface Props {
   onStudentUpdated: () => void;
 }
 
-export function EditStudentDialog({ open, onOpenChange, student, onStudentUpdated }: Props) {
+export function EditStudentDialog({
+  open,
+  onOpenChange,
+  student,
+  onStudentUpdated,
+}: Props) {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -87,8 +92,14 @@ export function EditStudentDialog({ open, onOpenChange, student, onStudentUpdate
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!firstName.trim() || !lastName.trim() || !email.trim() || !studentNumber.trim() || !courseId) {
+
+    if (
+      !firstName.trim() ||
+      !lastName.trim() ||
+      !email.trim() ||
+      !studentNumber.trim() ||
+      !courseId
+    ) {
       toast.error("Todos os campos são obrigatórios");
       return;
     }
@@ -110,7 +121,8 @@ export function EditStudentDialog({ open, onOpenChange, student, onStudentUpdate
         toast.error(response.data.message || "Erro ao atualizar estudante");
       }
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || "Erro ao atualizar estudante";
+      const errorMessage =
+        error.response?.data?.message || "Erro ao atualizar estudante";
       toast.error(errorMessage);
       console.error("Error updating student:", error);
     } finally {
@@ -138,7 +150,8 @@ export function EditStudentDialog({ open, onOpenChange, student, onStudentUpdate
               Editar Estudante
             </DialogTitle>
             <DialogDescription>
-              Atualize as informações do estudante {student?.firstName} {student?.lastName}.
+              Atualize as informações do estudante {student?.firstName}{" "}
+              {student?.lastName}.
             </DialogDescription>
           </DialogHeader>
 
@@ -179,7 +192,7 @@ export function EditStudentDialog({ open, onOpenChange, student, onStudentUpdate
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="studentNumber">Matrícula *</Label>
+              <Label htmlFor="studentNumber">Codigo de Estudante *</Label>
               <Input
                 id="studentNumber"
                 placeholder="Ex: 2024001234"
@@ -191,9 +204,19 @@ export function EditStudentDialog({ open, onOpenChange, student, onStudentUpdate
 
             <div className="space-y-2">
               <Label htmlFor="course">Curso *</Label>
-              <Select value={courseId} onValueChange={setCourseId} disabled={loading || loadingCourses}>
+              <Select
+                value={courseId}
+                onValueChange={setCourseId}
+                disabled={loading || loadingCourses}
+              >
                 <SelectTrigger>
-                  <SelectValue placeholder={loadingCourses ? "Carregando cursos..." : "Selecione um curso"} />
+                  <SelectValue
+                    placeholder={
+                      loadingCourses
+                        ? "Carregando cursos..."
+                        : "Selecione um curso"
+                    }
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {courses.map((course) => (

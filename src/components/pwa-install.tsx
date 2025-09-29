@@ -100,7 +100,7 @@ const PWAInstallPrompt = () => {
               <Image src="/logo.png" alt="Logo" width={64} height={64} />
             </div>
             <DialogTitle className="text-center text-primary">
-              ARQUIVAR
+              Sistema de Gestão de TCCs
             </DialogTitle>
             <DialogTitle className="text-center">Instale nosso App</DialogTitle>
             <DialogDescription className="text-center space-y-2 text-muted-foreground text-sm">

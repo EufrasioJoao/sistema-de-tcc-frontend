@@ -140,10 +140,6 @@
   }
 }
 
-@utility container {
-  @apply mx-auto px-4 max-w-7xl;
-}
-
 @utility title {
   @apply text-black/75 text-3xl;
 }
@@ -309,27 +305,27 @@
     --radius: 0.625rem;
 
     /* Primary Theme Colors - Modern Blue Theme */
-    --primary: hsl(217 91% 60%);         /* Vibrant Blue */
+    --primary: hsl(217 91% 60%); /* Vibrant Blue */
     --primary-foreground: hsl(0 0% 100%); /* White */
-    --success: hsl(142 71% 45%);         /* Green */
-    --destructive: hsl(0 84% 60%);       /* Red */
+    --success: hsl(142 71% 45%); /* Green */
+    --destructive: hsl(0 84% 60%); /* Red */
 
     /* UI Colors */
-    --background: hsl(220 14% 96%);      /* Light Gray Background */
-    --foreground: hsl(222 47% 11%);      /* Dark Navy Text */
-    --card: hsl(0 0% 100%);               /* White */
-    --card-foreground: hsl(222 47% 11%);  /* Dark Navy Text */
-    --popover: hsl(0 0% 100%);            /* White */
-    --popover-foreground: hsl(222 47% 11%);/* Dark Navy Text */
-    --secondary: hsl(220 14% 91%);        /* Lighter Gray */
-    --secondary-foreground: hsl(222 47% 25%);/* Darker Gray Text */
-    --muted: hsl(220 14% 91%);            /* Lighter Gray */
-    --muted-foreground: hsl(220 13% 49%);  /* Muted Gray Text */
-    --accent: hsl(220 14% 91%);           /* Lighter Gray */
+    --background: hsl(220 14% 96%); /* Light Gray Background */
+    --foreground: hsl(222 47% 11%); /* Dark Navy Text */
+    --card: hsl(0 0% 100%); /* White */
+    --card-foreground: hsl(222 47% 11%); /* Dark Navy Text */
+    --popover: hsl(0 0% 100%); /* White */
+    --popover-foreground: hsl(222 47% 11%); /* Dark Navy Text */
+    --secondary: hsl(220 14% 91%); /* Lighter Gray */
+    --secondary-foreground: hsl(222 47% 25%); /* Darker Gray Text */
+    --muted: hsl(220 14% 91%); /* Lighter Gray */
+    --muted-foreground: hsl(220 13% 49%); /* Muted Gray Text */
+    --accent: hsl(220 14% 91%); /* Lighter Gray */
     --accent-foreground: hsl(222 47% 25%); /* Darker Gray Text */
-    --border: hsl(220 13% 89%);          /* Light Gray Border */
-    --input: hsl(220 13% 89%);           /* Light Gray Input */
-    --ring: hsl(217 91% 60%);            /* Vibrant Blue for focus rings */
+    --border: hsl(220 13% 89%); /* Light Gray Border */
+    --input: hsl(220 13% 89%); /* Light Gray Input */
+    --ring: hsl(217 91% 60%); /* Vibrant Blue for focus rings */
 
     /* Chart Colors */
     --chart-1: oklch(0.646 0.222 41.116);

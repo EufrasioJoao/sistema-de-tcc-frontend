@@ -14,14 +14,10 @@ export enum FileType {
 
 export enum AccessHistoryAction {
   VIEW_FILE = "VIEW_FILE",
-  VIEW_FOLDER = "VIEW_FOLDER",
   DOWNLOAD_FILE = "DOWNLOAD_FILE",
   EDIT_FILE = "EDIT_FILE",
-  EDIT_FOLDER = "EDIT_FOLDER",
   MOVE_FILE = "MOVE_FILE",
-  MOVE_FOLDER = "MOVE_FOLDER",
   UPLOAD_FILE = "UPLOAD_FILE",
-  CREATE_FOLDER = "CREATE_FOLDER",
 }
 
 export enum TccType {
@@ -56,10 +52,11 @@ export interface User {
   deleted_at?: Date | string | null;
   files?: File[];
   file_access_history?: AccessHistory[];
-  permissions?: FolderPermission[];
+  permissions?: FilePermission[];
   supervised_tccs?: TCC[];
   coordinated_courses?: Course[];
-  organization?: Organization[];
+  organization_id: string;
+  organization?: Organization;
 }
 
 export interface Organization {
@@ -74,40 +71,17 @@ export interface Organization {
   state?: string | null;
   UsedStorage?: number | null;
   files?: File[];
-  folders?: Folder[];
   users?: User[];
 }
 
-export interface Folder {
+export interface FilePermission {
   id: string;
-  name: string;
-  path?: string | null;
-  parent_folder_id?: string | null;
-  organization_id: string;
-  created_at: Date | string;
-  updated_at: Date | string;
-  deleted_at?: Date | string | null;
-  permissions?: FolderPermission[];
-  files?: File[];
-  organization?: Organization;
-  parent_folder?: Folder | null;
-  folders?: Folder[];
-  AccessHistory?: AccessHistory[];
-  // custom fields for UI
-  hasSubfolders?: boolean;
-  hasFiles?: boolean;
-  subfolders?: Folder[];
-  accessLevel?: PermissionAccessLevel;
-}
-
-export interface FolderPermission {
-  id: string;
-  folderId: string;
+  fileId: string;
   userId?: string | null;
   accessLevel: PermissionAccessLevel;
   createdAt: Date | string;
   updatedAt: Date | string;
-  folder?: Folder;
+  file?: File;
   user?: User | null;
 }
 
@@ -118,15 +92,14 @@ export interface File {
   size: string;
   type: FileType;
   path?: string | null;
-  folder_id: string;
   organization_id: string;
   uploaded_by: string;
   created_at: Date | string;
   updated_at: Date | string;
   deleted_at?: Date | string | null;
   access_history?: AccessHistory[];
+  permissions?: FilePermission[];
   organization?: Organization;
-  folder?: Folder;
   uploader?: User;
   tcc?: TCC | null;
   defenseRecordForTcc?: TCC | null;
@@ -138,14 +111,12 @@ export interface AccessHistory {
   id: string;
   accessed_by: string;
   file_id?: string | null;
-  folder_id?: string | null;
   accessed_at?: Date | string | null;
   action_performed: AccessHistoryAction;
   created_at: Date | string;
   updated_at: Date | string;
   user?: User;
   file?: File | null;
-  folder?: Folder | null;
 }
 
 export interface Course {

@@ -150,7 +150,7 @@ function ResetWithCodeFlow() {
       const response = await api.post("/api/users/password/forgot/reset", {
         email,
         code,
-        newPassword,
+        password: newPassword,
       });
 
       if (response.status === 200) {

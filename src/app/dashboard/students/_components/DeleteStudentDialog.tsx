@@ -36,7 +36,12 @@ interface Props {
   onStudentDeleted: () => void;
 }
 
-export function DeleteStudentDialog({ open, onOpenChange, student, onStudentDeleted }: Props) {
+export function DeleteStudentDialog({
+  open,
+  onOpenChange,
+  student,
+  onStudentDeleted,
+}: Props) {
   const [loading, setLoading] = useState(false);
 
   const handleDelete = async () => {
@@ -51,7 +56,8 @@ export function DeleteStudentDialog({ open, onOpenChange, student, onStudentDele
         toast.error(response.data.message || "Erro ao remover estudante");
       }
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || "Erro ao remover estudante";
+      const errorMessage =
+        error.response?.data?.message || "Erro ao remover estudante";
       toast.error(errorMessage);
       console.error("Error deleting student:", error);
     } finally {
@@ -75,7 +81,8 @@ export function DeleteStudentDialog({ open, onOpenChange, student, onStudentDele
               Remover Estudante
             </DialogTitle>
             <DialogDescription>
-              Esta ação não pode ser desfeita. O estudante será removido permanentemente do sistema.
+              Esta ação não pode ser desfeita. O estudante será removido
+              permanentemente do sistema.
             </DialogDescription>
           </DialogHeader>
 
@@ -89,20 +96,23 @@ export function DeleteStudentDialog({ open, onOpenChange, student, onStudentDele
                   </p>
                   <div className="space-y-1">
                     <p className="text-sm text-red-700 dark:text-red-300">
-                      <strong>Nome:</strong> {student.firstName} {student.lastName}
+                      <strong>Nome:</strong> {student.firstName}{" "}
+                      {student.lastName}
                     </p>
                     <p className="text-sm text-red-700 dark:text-red-300">
                       <strong>Email:</strong> {student.email}
                     </p>
                     <p className="text-sm text-red-700 dark:text-red-300">
-                      <strong>Matrícula:</strong> {student.studentNumber}
+                      <strong>Codigo de Estudante:</strong>{" "}
+                      {student.studentNumber}
                     </p>
                     <p className="text-sm text-red-700 dark:text-red-300">
                       <strong>Curso:</strong> {student.course.name}
                     </p>
                     {student._count.tccs > 0 && (
                       <p className="text-sm text-red-700 dark:text-red-300">
-                        <strong>TCCs:</strong> {student._count.tccs} trabalho(s) associado(s)
+                        <strong>TCCs:</strong> {student._count.tccs} trabalho(s)
+                        associado(s)
                       </p>
                     )}
                   </div>
@@ -119,8 +129,9 @@ export function DeleteStudentDialog({ open, onOpenChange, student, onStudentDele
                       Atenção!
                     </p>
                     <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
-                      Este estudante possui {student._count.tccs} TCC(s) associado(s). 
-                      Remover o estudante também removerá todos os trabalhos relacionados.
+                      Este estudante possui {student._count.tccs} TCC(s)
+                      associado(s). Remover o estudante também removerá todos os
+                      trabalhos relacionados.
                     </p>
                   </div>
                 </div>

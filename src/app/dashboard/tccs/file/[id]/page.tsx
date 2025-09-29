@@ -24,44 +24,47 @@ export default function FilePage({
   const { id } = use(params);
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState<{
-    presignedUrl: null;
-    contentAvailable: boolean;
-    id: string;
-    filename: string;
-    displayName: string;
-    path: string | null;
-    uploaded_by: number | null;
-    organization_id: number;
-    folder_id: string;
-    created_at: Date;
-    updated_at: Date;
-    size: string;
-    type: string;
+    presignedUrl: string | null;
   } | null>(null);
   const [fileType, setFileType] = useState<string>("");
   const [fileName, setFileName] = useState<string>("");
+  const [tccId, setTccId] = useState<string>("");
   const viewerRef = useRef<HTMLDivElement>(null);
 
-  const downloadFile = async (fileId: string) => {
+  const loadFile = async (fileId: string) => {
     if (loading || !fileId) return;
 
     setLoading(true);
     try {
       const urlParams = new URLSearchParams(window.location.search);
       const name = urlParams.get("name") as string;
+      const tccIdParam = urlParams.get("tccId") as string;
+      const fileTypeParam = urlParams.get("fileType") as string; // 'main' or 'defense'
+
       setFileName(name);
+      setTccId(tccIdParam);
 
       const extension = name.split(".").pop()?.toLowerCase() || "";
       setFileType(extension);
 
-      const response = await api.get(`/api/files/${fileId}`);
+      // Use our TCC download endpoint to get presigned URL
+      const response = await api.get(
+        `/api/tccs/${tccIdParam}/download/${fileTypeParam}`
+      );
 
-      setFile(response.data?.file);
+      if (response.data.success) {
+        setFile({
+          presignedUrl: response.data.downloadUrl,
+        });
+      } else {
+        toast.error(response.data.message || "Erro ao carregar arquivo");
+      }
     } catch (error) {
-      console.error("Error downloading the file:", error);
+      console.error("Error loading the file:", error);
       if (error instanceof AxiosError) {
         toast.error(
-          error?.response?.data?.message || "Ocorreu um erro ao fazer download!"
+          error?.response?.data?.message ||
+            "Ocorreu um erro ao carregar o arquivo!"
         );
       }
     } finally {
@@ -70,7 +73,7 @@ export default function FilePage({
   };
 
   useEffect(() => {
-    if (id) downloadFile(id);
+    if (id) loadFile(id);
   }, [id]);
 
   const toggleFullscreen = () => {
@@ -85,14 +88,24 @@ export default function FilePage({
     }
   };
 
-  const handleDownload = () => {
-    if (file?.presignedUrl) {
+  const handleDownload = async () => {
+    if (!file?.presignedUrl) {
+      toast.error("Arquivo não disponível para download");
+      return;
+    }
+
+    try {
+      toast.success("Download iniciado...");
+
       const link = document.createElement("a");
       link.href = file.presignedUrl;
       link.download = fileName;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+    } catch (error) {
+      console.error("Download error:", error);
+      toast.error("Erro ao fazer download do arquivo");
     }
   };
 
@@ -101,7 +114,7 @@ export default function FilePage({
   return (
     <div className="flex flex-col h-screen bg-white w-full">
       <div className="flex-none p-4 z-10 flex items-center justify-between bg-white border-b">
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-4">
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
@@ -116,6 +129,11 @@ export default function FilePage({
               <p>Voltar</p>
             </TooltipContent>
           </Tooltip>
+
+          <div className="flex flex-col">
+            <h1 className="text-lg font-semibold text-gray-900">{fileName}</h1>
+            <p className="text-sm text-gray-500">Visualizador de Arquivo TCC</p>
+          </div>
         </div>
 
         <div className="flex items-center space-x-2">

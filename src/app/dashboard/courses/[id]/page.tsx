@@ -4,11 +4,11 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import { motion } from "framer-motion";
-import { 
-  ArrowLeft, 
-  GraduationCap, 
-  Users, 
-  FileText, 
+import {
+  ArrowLeft,
+  GraduationCap,
+  Users,
+  FileText,
   Calendar,
   Mail,
   UserCheck,
@@ -16,7 +16,7 @@ import {
   Edit,
   Trash2,
   Plus,
-  MoreHorizontal
+  MoreHorizontal,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -86,7 +86,7 @@ export default function CourseDetailsPage() {
   const params = useParams();
   const router = useRouter();
   const courseId = params.id as string;
-  
+
   const [course, setCourse] = useState<Course | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -115,7 +115,7 @@ export default function CourseDetailsPage() {
 
   if (loading) {
     return (
-      <div className="container mx-auto p-6 space-y-8">
+      <div className="mx-auto p-6 space-y-8">
         <div className="flex items-center space-x-4">
           <Skeleton className="h-10 w-10 rounded-lg" />
           <div>
@@ -123,7 +123,7 @@ export default function CourseDetailsPage() {
             <Skeleton className="h-4 w-48" />
           </div>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[1, 2, 3].map((i) => (
             <Card key={i}>
@@ -159,7 +159,7 @@ export default function CourseDetailsPage() {
 
   if (!course) {
     return (
-      <div className="container mx-auto p-6">
+      <div className="mx-auto p-6">
         <div className="text-center py-12">
           <GraduationCap className="mx-auto h-16 w-16 text-gray-400 mb-4" />
           <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
@@ -179,7 +179,7 @@ export default function CourseDetailsPage() {
 
   return (
     <motion.div
-      className="container mx-auto p-6 space-y-8"
+      className="mx-auto p-6 space-y-8"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -200,7 +200,7 @@ export default function CourseDetailsPage() {
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          
+
           <div className="flex items-center space-x-3">
             <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-xl flex items-center justify-center text-white font-bold text-lg">
               {course.name.charAt(0).toUpperCase()}
@@ -221,7 +221,10 @@ export default function CourseDetailsPage() {
             <Edit className="h-4 w-4" />
             Editar
           </Button>
-          <Button variant="outline" className="gap-2 text-red-600 hover:text-red-700">
+          <Button
+            variant="outline"
+            className="gap-2 text-red-600 hover:text-red-700"
+          >
             <Trash2 className="h-4 w-4" />
             Excluir
           </Button>
@@ -251,11 +254,13 @@ export default function CourseDetailsPage() {
                   {course.coordinator ? (
                     <div className="flex items-center space-x-3">
                       <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                        {course.coordinator.first_name.charAt(0)}{course.coordinator.last_name.charAt(0)}
+                        {course.coordinator.first_name.charAt(0)}
+                        {course.coordinator.last_name.charAt(0)}
                       </div>
                       <div>
                         <p className="font-medium text-gray-900 dark:text-gray-100">
-                          {course.coordinator.first_name} {course.coordinator.last_name}
+                          {course.coordinator.first_name}{" "}
+                          {course.coordinator.last_name}
                         </p>
                         <p className="text-sm text-gray-600 dark:text-gray-400">
                           {course.coordinator.email}
@@ -274,7 +279,7 @@ export default function CourseDetailsPage() {
                   )}
                 </div>
               </div>
-              
+
               <div>
                 <label className="text-sm font-medium text-gray-600 dark:text-gray-400">
                   Data de Criação
@@ -285,7 +290,7 @@ export default function CourseDetailsPage() {
                     {new Date(course.createdAt).toLocaleDateString("pt-BR", {
                       day: "2-digit",
                       month: "long",
-                      year: "numeric"
+                      year: "numeric",
                     })}
                   </span>
                 </div>
@@ -309,7 +314,10 @@ export default function CourseDetailsPage() {
                 <Users className="h-5 w-5" />
                 Estudantes
               </div>
-              <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
+              <Badge
+                variant="secondary"
+                className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
+              >
                 {course._count.students}
               </Badge>
             </CardTitle>
@@ -323,7 +331,10 @@ export default function CourseDetailsPage() {
                 <FileText className="h-5 w-5" />
                 TCCs
               </div>
-              <Badge variant="secondary" className="bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
+              <Badge
+                variant="secondary"
+                className="bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300"
+              >
                 {course._count.tccs}
               </Badge>
             </CardTitle>
@@ -337,8 +348,16 @@ export default function CourseDetailsPage() {
                 <Calendar className="h-5 w-5" />
                 Ativo há
               </div>
-              <Badge variant="secondary" className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
-                {Math.floor((new Date().getTime() - new Date(course.createdAt).getTime()) / (1000 * 60 * 60 * 24))} dias
+              <Badge
+                variant="secondary"
+                className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300"
+              >
+                {Math.floor(
+                  (new Date().getTime() -
+                    new Date(course.createdAt).getTime()) /
+                    (1000 * 60 * 60 * 24)
+                )}{" "}
+                dias
               </Badge>
             </CardTitle>
           </CardHeader>
@@ -372,7 +391,7 @@ export default function CourseDetailsPage() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Nome</TableHead>
-                      <TableHead>Matrícula</TableHead>
+                      <TableHead>Codigo de Estudante</TableHead>
                       <TableHead className="w-12"></TableHead>
                     </TableRow>
                   </TableHeader>
@@ -382,11 +401,16 @@ export default function CourseDetailsPage() {
                         <TableCell>
                           <div className="flex items-center space-x-3">
                             <div className="w-8 h-8 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center text-white font-semibold text-xs">
-                              {student.firstName.charAt(0)}{student.lastName.charAt(0)}
+                              {student.firstName.charAt(0)}
+                              {student.lastName.charAt(0)}
                             </div>
                             <div>
-                              <p className="font-medium">{student.firstName} {student.lastName}</p>
-                              <p className="text-xs text-gray-500">{student.email}</p>
+                              <p className="font-medium">
+                                {student.firstName} {student.lastName}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                {student.email}
+                              </p>
                             </div>
                           </div>
                         </TableCell>
@@ -458,14 +482,16 @@ export default function CourseDetailsPage() {
                       <TableRow key={tcc.id}>
                         <TableCell>
                           <div>
-                            <p className="font-medium line-clamp-1">{tcc.title}</p>
+                            <p className="font-medium line-clamp-1">
+                              {tcc.title}
+                            </p>
                             <p className="text-xs text-gray-500">
                               {tcc.author.firstName} {tcc.author.lastName}
                             </p>
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge 
+                          <Badge
                             variant="secondary"
                             className="bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
                           >

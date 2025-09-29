@@ -142,7 +142,8 @@ export function StudentTable({
         return (
           <div className="flex items-center space-x-3 py-2">
             <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-              {student.firstName.charAt(0)}{student.lastName.charAt(0)}
+              {student.firstName.charAt(0)}
+              {student.lastName.charAt(0)}
             </div>
             <div className="flex flex-col">
               <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
@@ -162,7 +163,7 @@ export function StudentTable({
       header: () => (
         <div className="flex items-center">
           <span className="font-semibold text-gray-700 dark:text-gray-300">
-            Matrícula
+            Codigo de Estudante
           </span>
         </div>
       ),
@@ -185,7 +186,10 @@ export function StudentTable({
       cell: ({ row }) => {
         const course = row.original.course;
         return (
-          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-700">
+          <Badge
+            variant="outline"
+            className="bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-700"
+          >
             {course.name}
           </Badge>
         );
@@ -204,11 +208,11 @@ export function StudentTable({
       cell: ({ row }) => {
         const tccCount = row.original._count.tccs;
         return (
-          <Badge 
+          <Badge
             variant={tccCount > 0 ? "default" : "secondary"}
             className={
-              tccCount > 0 
-                ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300" 
+              tccCount > 0
+                ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
                 : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
             }
           >
@@ -242,7 +246,9 @@ export function StudentTable({
       id: "actions",
       header: () => (
         <div className="flex items-center justify-center">
-          <span className="font-semibold text-gray-700 dark:text-gray-300">Ações</span>
+          <span className="font-semibold text-gray-700 dark:text-gray-300">
+            Ações
+          </span>
         </div>
       ),
       cell: ({ row }) => {
@@ -333,7 +339,10 @@ export function StudentTable({
         <Table>
           <TableHeader className="bg-gray-50 dark:bg-gray-800/50">
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="border-b border-gray-200 dark:border-gray-700">
+              <TableRow
+                key={headerGroup.id}
+                className="border-b border-gray-200 dark:border-gray-700"
+              >
                 {headerGroup.headers.map((header) => (
                   <TableHead key={header.id} className="px-6 py-4">
                     {header.isPlaceholder

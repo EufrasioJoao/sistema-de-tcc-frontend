@@ -35,7 +35,11 @@ interface Props {
   onStudentAdded: () => void;
 }
 
-export function AddStudentDialog({ open, onOpenChange, onStudentAdded }: Props) {
+export function AddStudentDialog({
+  open,
+  onOpenChange,
+  onStudentAdded,
+}: Props) {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -68,8 +72,14 @@ export function AddStudentDialog({ open, onOpenChange, onStudentAdded }: Props) 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!firstName.trim() || !lastName.trim() || !email.trim() || !studentNumber.trim() || !courseId) {
+
+    if (
+      !firstName.trim() ||
+      !lastName.trim() ||
+      !email.trim() ||
+      !studentNumber.trim() ||
+      !courseId
+    ) {
       toast.error("Todos os campos são obrigatórios");
       return;
     }
@@ -91,7 +101,8 @@ export function AddStudentDialog({ open, onOpenChange, onStudentAdded }: Props) 
         toast.error(response.data.message || "Erro ao criar estudante");
       }
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || "Erro ao criar estudante";
+      const errorMessage =
+        error.response?.data?.message || "Erro ao criar estudante";
       toast.error(errorMessage);
       console.error("Error creating student:", error);
     } finally {
@@ -124,7 +135,8 @@ export function AddStudentDialog({ open, onOpenChange, onStudentAdded }: Props) 
               Adicionar Estudante
             </DialogTitle>
             <DialogDescription>
-              Preencha as informações para cadastrar um novo estudante no sistema.
+              Preencha as informações para cadastrar um novo estudante no
+              sistema.
             </DialogDescription>
           </DialogHeader>
 
@@ -165,7 +177,7 @@ export function AddStudentDialog({ open, onOpenChange, onStudentAdded }: Props) 
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="studentNumber">Matrícula *</Label>
+              <Label htmlFor="studentNumber">Codigo de Estudante *</Label>
               <Input
                 id="studentNumber"
                 placeholder="Ex: 2024001234"
@@ -177,9 +189,19 @@ export function AddStudentDialog({ open, onOpenChange, onStudentAdded }: Props) 
 
             <div className="space-y-2">
               <Label htmlFor="course">Curso *</Label>
-              <Select value={courseId} onValueChange={setCourseId} disabled={loading || loadingCourses}>
+              <Select
+                value={courseId}
+                onValueChange={setCourseId}
+                disabled={loading || loadingCourses}
+              >
                 <SelectTrigger>
-                  <SelectValue placeholder={loadingCourses ? "Carregando cursos..." : "Selecione um curso"} />
+                  <SelectValue
+                    placeholder={
+                      loadingCourses
+                        ? "Carregando cursos..."
+                        : "Selecione um curso"
+                    }
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {courses.map((course) => (
