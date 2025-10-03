@@ -10,8 +10,8 @@ import { Providers } from "@/components/providers";
 import PWAInstallPrompt from "@/components/pwa-install";
 
 export const metadata: Metadata = {
-  title: "Aquivar - CMS - Operadores",
-  description: "Sistema de gerenciamento de conteúdo moderno.",
+  title: "Sistema de Gestão de TCCs",
+  description: "Sistema de gerenciamento moderno de TCCs.",
 
   manifest: "/manifest.json",
   icons: {
