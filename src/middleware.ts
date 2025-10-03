@@ -21,7 +21,7 @@ export default async function middleware(req: NextRequest) {
 
   if (!cookie) {
     if (isProtectedRoute) {
-      return NextResponse.redirect(new URL("/auth/sign-in", req.nextUrl));
+      return NextResponse.redirect(new URL("/auth/signin", req.nextUrl));
     }
     return NextResponse.next();
   }
@@ -30,8 +30,8 @@ export default async function middleware(req: NextRequest) {
 
   // If in a protected route and not logged in
   if (isProtectedRoute && !session?.data.userId) {
-    console.log("Redirected to sign-in page to login.");
-    return NextResponse.redirect(new URL("/auth/sign-in", req.nextUrl));
+    console.log("Redirected to signin page to login.");
+    return NextResponse.redirect(new URL("/auth/signin", req.nextUrl));
   }
 
   // If logged in on a redirect route
