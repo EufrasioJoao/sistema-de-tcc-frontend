@@ -59,9 +59,9 @@ export function AddCourseDialog({ open, onOpenChange, onSuccess }: Props) {
       if (response.data.success) {
         // Filter users who can be coordinators
         const potentialCoordinators = response.data.users.filter(
-          (user: User) => 
-            user.role === "COURSE_COORDENATOR" || 
-            user.role === "ADMIN" || 
+          (user: User) =>
+            user.role === "COURSE_COORDENATOR" ||
+            user.role === "ADMIN" ||
             user.role === "SISTEM_MANAGER"
         );
         setCoordinators(potentialCoordinators);
@@ -75,7 +75,7 @@ export function AddCourseDialog({ open, onOpenChange, onSuccess }: Props) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!name.trim()) {
       toast.error("Nome do curso é obrigatório");
       return;
@@ -110,7 +110,8 @@ export function AddCourseDialog({ open, onOpenChange, onSuccess }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+
+      <DialogContent className="w-[95vw] max-w-2xl max-h-[95vh] overflow-y-auto  sm:mx-auto">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -164,8 +165,8 @@ export function AddCourseDialog({ open, onOpenChange, onSuccess }: Props) {
               <Select value={coordinatorId} onValueChange={setCoordinatorId}>
                 <SelectTrigger className="bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700">
                   <SelectValue placeholder={
-                    loadingCoordinators 
-                      ? "Carregando coordenadores..." 
+                    loadingCoordinators
+                      ? "Carregando coordenadores..."
                       : "Selecione um coordenador"
                   } />
                 </SelectTrigger>

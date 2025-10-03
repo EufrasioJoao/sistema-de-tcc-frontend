@@ -32,22 +32,12 @@ const Header: React.FC<{ titleDiv?: React.ReactNode }> = ({ titleDiv }) => {
   const { openMobile, setOpenMobile } = useSidebar();
 
   return (
-    <div className="fixed bg-white md:bg-transparent px-5 md:px-0 shadow-sm md:shadow-none md:sticky left-0 top-0 z-50 w-full transition-all duration-300 py-4">
+    <div className="md:hidden fixed bg-white md:bg-transparent px-5 md:px-0 shadow-sm md:shadow-none md:sticky left-0 top-0 z-50 w-full transition-all duration-300 py-4">
       <div className="flex justify-between">
-        {titleDiv ? (
-          <div className="hidden md:inline-block">{titleDiv}</div>
-        ) : (
-          <div className="hidden md:inline-block">
-            <h1 className="text-2xl font-semibold">Painel</h1>
-            <p className="text-gray-500">
-              Olá {userName()}, bem-vindo de volta!
-            </p>
-          </div>
-        )}
 
         <Button
           variant={"secondary"}
-          className="border inline-block md:hidden "
+          className="border inline-block"
           onClick={() => setOpenMobile(!openMobile)}
         >
           <Menu />

@@ -1,17 +1,12 @@
 "use client";
 
 import {
-  Area,
-  AreaChart,
   Bar,
   BarChart,
   CartesianGrid,
   Cell,
-  LabelList,
-  Line,
-  LineChart,
-  XAxis,
-  YAxis,
+  LabelList, XAxis,
+  YAxis
 } from "recharts";
 
 import {
@@ -29,11 +24,14 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart";
 import { ChartData } from "./types";
-import { TrendingUp } from "lucide-react";
+import { UsersChart } from "./UsersChart";
 
 interface ChartsProps {
   barChartData: ChartData[];
-  lineChartData: ChartData[];
+  areaChartData: {
+    date: string;
+    usuarios: number;
+  }[]
 }
 
 const barChartConfig = {
@@ -62,61 +60,13 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function Charts({ barChartData, lineChartData }: ChartsProps) {
+export function Charts({ barChartData, areaChartData }: ChartsProps) {
   return (
-    <div className="grid gap-4 grid-cols-3 mb-4">
-      <Card className="col-span-2">
-        <CardHeader>
-          <CardTitle>Novos usuários</CardTitle>
-          <CardDescription>
-            Total de novos usuários nos últimos 6 meses
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ChartContainer className="max-h-[280px] w-full" config={chartConfig}>
-            <AreaChart
-              accessibilityLayer
-              data={lineChartData}
-              margin={{
-                left: 12,
-                right: 12,
-              }}
-            >
-              <CartesianGrid vertical={false} />
-              <XAxis
-                dataKey="month"
-                tickLine={false}
-                axisLine={false}
-                tickMargin={8}
-                tickFormatter={(value) => value.slice(0, 3)}
-              />
-              <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-              <defs>
-                <linearGradient id="fillUsers" x1="0" y1="0" x2="0" y2="1">
-                  <stop
-                    offset="5%"
-                    stopColor="var(--color-users)"
-                    stopOpacity={0.8}
-                  />
-                  <stop
-                    offset="95%"
-                    stopColor="var(--color-users)"
-                    stopOpacity={0.1}
-                  />
-                </linearGradient>
-              </defs>
-              <Area
-                dataKey="users"
-                type="natural"
-                fill="url(#fillUsers)"
-                fillOpacity={0.4}
-                stroke="var(--color-users)"
-                stackId="a"
-              />
-            </AreaChart>
-          </ChartContainer>
-        </CardContent>
-      </Card>
+    <div className="grid gap-4 grid-cols-1 lg:grid-cols-3 mb-4">
+      <div className="lg:col-span-2">
+
+        <UsersChart areaChartData={areaChartData} />
+      </div>
 
       <Card>
         <CardHeader>

@@ -149,7 +149,7 @@ export function AddTCCDialog({
 
       // Create FormData with all TCC data and files
       const formData = new FormData();
-      
+
       // Add form fields
       formData.append("title", values.title);
       formData.append("year", values.year);
@@ -158,7 +158,7 @@ export function AddTCCDialog({
       formData.append("authorId", values.authorId);
       formData.append("supervisorId", values.supervisorId);
       formData.append("courseId", values.courseId);
-      
+
       // Add files
       formData.append("tccFile", selectedFile);
       if (selectedDefenseFile) {
@@ -272,25 +272,29 @@ export function AddTCCDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-[95vw] max-w-2xl max-h-[95vh] overflow-y-auto  sm:mx-auto">
         <DialogHeader>
-          <DialogTitle>Adicionar Novo TCC</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-lg sm:text-xl">Adicionar Novo TCC</DialogTitle>
+          <DialogDescription className="text-sm sm:text-base">
             Preencha as informações do trabalho de conclusão de curso.
           </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3 sm:space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <FormField
                 control={form.control}
                 name="title"
                 render={({ field }) => (
-                  <FormItem className="md:col-span-2">
-                    <FormLabel>Título</FormLabel>
+                  <FormItem className="sm:col-span-2">
+                    <FormLabel className="text-sm font-medium">Título</FormLabel>
                     <FormControl>
-                      <Input placeholder="Digite o título do TCC" {...field} />
+                      <Input
+                        placeholder="Digite o título do TCC"
+                        className="text-sm"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -302,19 +306,19 @@ export function AddTCCDialog({
                 name="type"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Tipo</FormLabel>
+                    <FormLabel className="text-sm font-medium">Tipo</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="text-sm">
                           <SelectValue placeholder="Selecione o tipo" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
                         {Object.entries(typeLabels).map(([value, label]) => (
-                          <SelectItem key={value} value={value}>
+                          <SelectItem key={value} value={value} className="text-sm">
                             {label}
                           </SelectItem>
                         ))}
@@ -330,9 +334,15 @@ export function AddTCCDialog({
                 name="year"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Ano</FormLabel>
+                    <FormLabel className="text-sm font-medium">Ano</FormLabel>
                     <FormControl>
-                      <Input type="number" min="2000" max="2030" {...field} />
+                      <Input
+                        type="number"
+                        min="2000"
+                        max="2030"
+                        className="text-sm"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -344,19 +354,19 @@ export function AddTCCDialog({
                 name="courseId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Curso</FormLabel>
+                    <FormLabel className="text-sm font-medium">Curso</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="text-sm">
                           <SelectValue placeholder="Selecione o curso" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
                         {courses.map((course) => (
-                          <SelectItem key={course.id} value={course.id}>
+                          <SelectItem key={course.id} value={course.id} className="text-sm">
                             {course.name}
                           </SelectItem>
                         ))}
@@ -371,22 +381,26 @@ export function AddTCCDialog({
                 control={form.control}
                 name="authorId"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Autor (Estudante)</FormLabel>
+                  <FormItem className="sm:col-span-1">
+                    <FormLabel className="text-sm font-medium">Autor (Estudante)</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="text-sm">
                           <SelectValue placeholder="Selecione o autor" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
                         {students.map((student) => (
-                          <SelectItem key={student.id} value={student.id}>
-                            {student.firstName} {student.lastName} -{" "}
-                            {student.studentNumber}
+                          <SelectItem key={student.id} value={student.id} className="text-sm">
+                            <span className="block sm:hidden">
+                              {student.firstName} {student.lastName}
+                            </span>
+                            <span className="hidden sm:block">
+                              {student.firstName} {student.lastName} - {student.studentNumber}
+                            </span>
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -400,20 +414,20 @@ export function AddTCCDialog({
                 control={form.control}
                 name="supervisorId"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Supervisor</FormLabel>
+                  <FormItem className="sm:col-span-1">
+                    <FormLabel className="text-sm font-medium">Supervisor</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="text-sm">
                           <SelectValue placeholder="Selecione o supervisor" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
                         {supervisors.map((supervisor) => (
-                          <SelectItem key={supervisor.id} value={supervisor.id}>
+                          <SelectItem key={supervisor.id} value={supervisor.id} className="text-sm">
                             {supervisor.first_name} {supervisor.last_name}
                           </SelectItem>
                         ))}
@@ -430,11 +444,11 @@ export function AddTCCDialog({
               name="keywords"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Palavras-chave (opcional)</FormLabel>
+                  <FormLabel className="text-sm font-medium">Palavras-chave (opcional)</FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="Digite as palavras-chave separadas por vírgula (opcional)"
-                      className="resize-none"
+                      className="resize-none text-sm min-h-[80px]"
                       {...field}
                     />
                   </FormControl>
@@ -444,7 +458,7 @@ export function AddTCCDialog({
             />
 
             {/* File Upload Section */}
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               <div>
                 <label className="text-sm font-medium">
                   Arquivo do TCC (PDF) *
@@ -452,20 +466,23 @@ export function AddTCCDialog({
                 <div className="mt-2">
                   {selectedFile ? (
                     <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                      <div className="flex items-center gap-2">
-                        <FileText className="h-4 w-4 text-blue-500" />
-                        <span className="text-sm font-medium">
-                          {selectedFile.name}
-                        </span>
-                        <span className="text-xs text-gray-500">
-                          ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
-                        </span>
+                      <div className="flex items-center gap-2 min-w-0 flex-1">
+                        <FileText className="h-4 w-4 text-blue-500 flex-shrink-0" />
+                        <div className="min-w-0 flex-1">
+                          <span className="text-sm font-medium block truncate">
+                            {selectedFile.name}
+                          </span>
+                          <span className="text-xs text-gray-500">
+                            ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
+                          </span>
+                        </div>
                       </div>
                       <Button
                         type="button"
                         variant="ghost"
                         size="sm"
                         onClick={() => removeFile(false)}
+                        className="flex-shrink-0"
                       >
                         <X className="h-4 w-4" />
                       </Button>
@@ -473,26 +490,24 @@ export function AddTCCDialog({
                   ) : (
                     <div
                       {...getTCCRootProps()}
-                      className={`border-2 border-dashed rounded-lg p-6 cursor-pointer transition-colors ${
-                        isTCCDragActive
-                          ? "border-blue-500 bg-blue-50 dark:bg-blue-950"
-                          : "border-gray-300 dark:border-gray-600 hover:border-blue-400"
-                      }`}
+                      className={`border-2 border-dashed rounded-lg p-4 sm:p-6 cursor-pointer transition-colors ${isTCCDragActive
+                        ? "border-blue-500 bg-blue-50 dark:bg-blue-950"
+                        : "border-gray-300 dark:border-gray-600 hover:border-blue-400"
+                        }`}
                     >
                       <input {...getTCCInputProps()} />
                       <div className="text-center">
                         <Upload
-                          className={`mx-auto h-8 w-8 ${
-                            isTCCDragActive ? "text-blue-500" : "text-gray-400"
-                          }`}
+                          className={`mx-auto h-6 w-6 sm:h-8 sm:w-8 ${isTCCDragActive ? "text-blue-500" : "text-gray-400"
+                            }`}
                         />
                         <div className="mt-2">
-                          <span className="text-sm font-medium text-blue-600 hover:text-blue-500">
+                          <span className="text-sm font-medium text-blue-600 hover:text-blue-500 block sm:inline">
                             {isTCCDragActive
                               ? "Solte o arquivo aqui"
                               : "Clique para selecionar"}
                           </span>
-                          <span className="text-sm text-gray-500">
+                          <span className="text-sm text-gray-500 block sm:inline">
                             {" "}
                             ou arraste o arquivo aqui
                           </span>
@@ -513,21 +528,23 @@ export function AddTCCDialog({
                 <div className="mt-2">
                   {selectedDefenseFile ? (
                     <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                      <div className="flex items-center gap-2">
-                        <FileText className="h-4 w-4 text-green-500" />
-                        <span className="text-sm font-medium">
-                          {selectedDefenseFile.name}
-                        </span>
-                        <span className="text-xs text-gray-500">
-                          ({(selectedDefenseFile.size / 1024 / 1024).toFixed(2)}{" "}
-                          MB)
-                        </span>
+                      <div className="flex items-center gap-2 min-w-0 flex-1">
+                        <FileText className="h-4 w-4 text-green-500 flex-shrink-0" />
+                        <div className="min-w-0 flex-1">
+                          <span className="text-sm font-medium block truncate">
+                            {selectedDefenseFile.name}
+                          </span>
+                          <span className="text-xs text-gray-500">
+                            ({(selectedDefenseFile.size / 1024 / 1024).toFixed(2)} MB)
+                          </span>
+                        </div>
                       </div>
                       <Button
                         type="button"
                         variant="ghost"
                         size="sm"
                         onClick={() => removeFile(true)}
+                        className="flex-shrink-0"
                       >
                         <X className="h-4 w-4" />
                       </Button>
@@ -535,28 +552,26 @@ export function AddTCCDialog({
                   ) : (
                     <div
                       {...getDefenseRootProps()}
-                      className={`border-2 border-dashed rounded-lg p-4 cursor-pointer transition-colors ${
-                        isDefenseDragActive
-                          ? "border-green-500 bg-green-50 dark:bg-green-950"
-                          : "border-gray-300 dark:border-gray-600 hover:border-green-400"
-                      }`}
+                      className={`border-2 border-dashed rounded-lg p-3 sm:p-4 cursor-pointer transition-colors ${isDefenseDragActive
+                        ? "border-green-500 bg-green-50 dark:bg-green-950"
+                        : "border-gray-300 dark:border-gray-600 hover:border-green-400"
+                        }`}
                     >
                       <input {...getDefenseInputProps()} />
                       <div className="text-center">
                         <Upload
-                          className={`mx-auto h-6 w-6 ${
-                            isDefenseDragActive
-                              ? "text-green-500"
-                              : "text-gray-400"
-                          }`}
+                          className={`mx-auto h-5 w-5 sm:h-6 sm:w-6 ${isDefenseDragActive
+                            ? "text-green-500"
+                            : "text-gray-400"
+                            }`}
                         />
                         <div className="mt-2">
-                          <span className="text-sm font-medium text-green-600 hover:text-green-500">
+                          <span className="text-sm font-medium text-green-600 hover:text-green-500 block sm:inline">
                             {isDefenseDragActive
                               ? "Solte a ata aqui"
                               : "Clique para selecionar ata de defesa"}
                           </span>
-                          <span className="text-sm text-gray-500">
+                          <span className="text-sm text-gray-500 block sm:inline">
                             {" "}
                             ou arraste o arquivo aqui
                           </span>
@@ -587,10 +602,10 @@ export function AddTCCDialog({
                 {loading
                   ? "Salvando..."
                   : uploadingFile
-                  ? "Enviando arquivo..."
-                  : uploadingDefenseFile
-                  ? "Enviando ata..."
-                  : "Salvar TCC"}
+                    ? "Enviando arquivo..."
+                    : uploadingDefenseFile
+                      ? "Enviando ata..."
+                      : "Salvar TCC"}
               </Button>
             </DialogFooter>
           </form>

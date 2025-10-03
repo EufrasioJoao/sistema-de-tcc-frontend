@@ -162,7 +162,7 @@ const Sidebar = () => {
       <SidebarHeader className="flex items-center justify-between p-4">
         {isExpanded && (
           <Link href="/dashboard" className="font-bold text-white">
-            Arquivo Digital UCM
+            Sistema de Gestão de TCCs
           </Link>
         )}
         <button

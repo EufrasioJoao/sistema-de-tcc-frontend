@@ -119,211 +119,196 @@ const createTCCColumns = (
   downloadingFiles: Set<string>,
   handleDownload: (tcc: TCC, fileType: "main" | "defense") => void
 ): ColumnDef<TCC>[] => [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Selecionar todos"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Selecionar linha"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "title",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="h-auto p-0 font-semibold"
-      >
-        Título
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => (
-      <div className="max-w-[300px]">
-        <p className="font-medium text-gray-900 dark:text-gray-100 truncate">
-          {row.getValue("title")}
-        </p>
-      </div>
-    ),
-  },
-  {
-    accessorKey: "type",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="h-auto p-0 font-semibold"
-      >
-        Tipo
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => {
-      const type = row.getValue("type") as "BACHELOR" | "MASTER" | "DOCTORATE";
-      return <Badge className={typeColors[type]}>{typeLabels[type]}</Badge>;
+    {
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Selecionar todos"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Selecionar linha"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
     },
-  },
-  {
-    accessorKey: "author",
-    header: "Autor",
-    cell: ({ row }) => {
-      const tcc = row.original;
-      return (
-        <div className="flex items-center gap-2">
-          <User className="h-4 w-4 text-blue-500" />
-          <div>
-            <p className="font-medium text-gray-900 dark:text-gray-100">
-              {tcc?.author?.firstName} {tcc?.author?.lastName}
-            </p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              {tcc?.author?.studentNumber}
-            </p>
-          </div>
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "supervisor",
-    header: "Supervisor",
-    cell: ({ row }) => {
-      const tcc = row.original;
-      return (
-        <div className="flex items-center gap-2">
-          <GraduationCap className="h-4 w-4 text-purple-500" />
-          <div>
-            <p className="font-medium text-gray-900 dark:text-gray-100">
-              {tcc?.supervisor?.first_name} {tcc?.supervisor?.last_name}
-            </p>
-          </div>
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "course",
-    header: "Curso",
-    cell: ({ row }) => {
-      const tcc = row.original;
-      return (
-        <div className="max-w-[200px]">
+    {
+      accessorKey: "title",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="h-auto p-0 font-semibold"
+        >
+          Título
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => (
+        <div className="max-w-[300px]">
           <p className="font-medium text-gray-900 dark:text-gray-100 truncate">
-            {tcc?.course?.name}
+            {row.getValue("title")}
           </p>
         </div>
-      );
+      ),
     },
-  },
-  {
-    accessorKey: "year",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="h-auto p-0 font-semibold"
-      >
-        Ano
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => (
-      <div className="flex items-center gap-2">
-        <Calendar className="h-4 w-4 text-green-500" />
-        <span className="font-medium">{row.getValue("year")}</span>
-      </div>
-    ),
-  },
-  {
-    id: "actions",
-    header: "Ações",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const tcc = row.original;
-      const downloadKey = `${tcc?.id}-main`;
-      const isDownloading = downloadingFiles.has(downloadKey);
+    {
+      accessorKey: "type",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="h-auto p-0 font-semibold"
+        >
+          Tipo
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const type = row.getValue("type") as "BACHELOR" | "MASTER" | "DOCTORATE";
+        return <Badge className={typeColors[type]}>{typeLabels[type]}</Badge>;
+      },
+    },
+    {
+      accessorKey: "author",
+      header: "Autor",
+      cell: ({ row }) => {
+        const tcc = row.original;
+        return (
+          <div className="flex items-center gap-2">
+            <User className="h-4 w-4 text-blue-500" />
+            <div>
+              <p className="font-medium text-gray-900 dark:text-gray-100">
+                {tcc?.author?.firstName} {tcc?.author?.lastName}
+              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {tcc?.author?.studentNumber}
+              </p>
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "supervisor",
+      header: "Supervisor",
+      cell: ({ row }) => {
+        const tcc = row.original;
+        return (
+          <div className="flex items-center gap-2">
+            <GraduationCap className="h-4 w-4 text-purple-500" />
+            <div>
+              <p className="font-medium text-gray-900 dark:text-gray-100">
+                {tcc?.supervisor?.first_name} {tcc?.supervisor?.last_name}
+              </p>
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "course",
+      header: "Curso",
+      cell: ({ row }) => {
+        const tcc = row.original;
+        return (
+          <div className="max-w-[200px]">
+            <p className="font-medium text-gray-900 dark:text-gray-100 truncate">
+              {tcc?.course?.name}
+            </p>
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "year",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="h-auto p-0 font-semibold"
+        >
+          Ano
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => (
+        <div className="flex items-center gap-2">
+          <Calendar className="h-4 w-4 text-green-500" />
+          <span className="font-medium">{row.getValue("year")}</span>
+        </div>
+      ),
+    },
+    {
+      id: "actions",
+      header: "Ações",
+      enableHiding: false,
+      cell: ({ row }) => {
+        const tcc = row.original;
+        const downloadKey = `${tcc?.id}-main`;
+        const isDownloading = downloadingFiles.has(downloadKey);
 
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Abrir menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Ações</DropdownMenuLabel>
-            <PermissionGuard requireViewTCC tcc={tcc}>
-              <DropdownMenuItem onClick={() => onView(tcc)}>
-                <Eye className="mr-2 h-4 w-4" />
-                Detalhes
-              </DropdownMenuItem>
-            </PermissionGuard>
-            <PermissionGuard requireDownloadFile tcc={tcc}>
-              <DropdownMenuItem
-                onClick={() =>
-                  openFileInViewer(
-                    tcc?.id,
-                    tcc?.file?.filename as string,
-                    tcc?.file?.displayName as string,
-                    "main"
-                  )
-                }
-              >
-                <FileText className="mr-2 h-4 w-4" />
-                Visualizar Arquivo
-              </DropdownMenuItem>
-            </PermissionGuard>
-            <DropdownMenuSeparator />
-            <PermissionGuard requireModifyTCC tcc={tcc}>
-              <DropdownMenuItem onClick={() => onEdit(tcc)}>
-                <Edit className="mr-2 h-4 w-4" />
-                Editar
-              </DropdownMenuItem>
-            </PermissionGuard>
-            <PermissionGuard requireDownloadFile tcc={tcc}>
-              <DropdownMenuItem
-                onClick={() => handleDownload(tcc, "main")}
-                disabled={isDownloading}
-              >
-                {isDownloading ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <Download className="mr-2 h-4 w-4" />
-                )}
-                {isDownloading ? "Baixando..." : "Download"}
-              </DropdownMenuItem>
-            </PermissionGuard>
-            <DropdownMenuSeparator />
-            <PermissionGuard requireDeleteTCC tcc={tcc}>
-              <DropdownMenuItem
-                onClick={() => onDelete(tcc)}
-                className="text-red-600 dark:text-red-400"
-              >
-                <Trash2 className="mr-2 h-4 w-4" />
-                Excluir
-              </DropdownMenuItem>
-            </PermissionGuard>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Abrir menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Ações</DropdownMenuLabel>
+              <PermissionGuard requireViewTCC tcc={tcc}>
+                <DropdownMenuItem onClick={() => onView(tcc)}>
+                  <Eye className="mr-2 h-4 w-4" />
+                  Detalhes
+                </DropdownMenuItem>
+              </PermissionGuard>
+              <DropdownMenuSeparator />
+              <PermissionGuard requireModifyTCC tcc={tcc}>
+                <DropdownMenuItem onClick={() => onEdit(tcc)}>
+                  <Edit className="mr-2 h-4 w-4" />
+                  Editar
+                </DropdownMenuItem>
+              </PermissionGuard>
+              <PermissionGuard requireDownloadFile tcc={tcc}>
+                <DropdownMenuItem
+                  onClick={() => handleDownload(tcc, "main")}
+                  disabled={isDownloading}
+                >
+                  {isDownloading ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <Download className="mr-2 h-4 w-4" />
+                  )}
+                  {isDownloading ? "Baixando..." : "Download"}
+                </DropdownMenuItem>
+              </PermissionGuard>
+              <DropdownMenuSeparator />
+              <PermissionGuard requireDeleteTCC tcc={tcc}>
+                <DropdownMenuItem
+                  onClick={() => onDelete(tcc)}
+                  className="text-red-600 dark:text-red-400"
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Excluir
+                </DropdownMenuItem>
+              </PermissionGuard>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
     },
-  },
-];
+  ];
 
 export function TCCTable({
   refreshTrigger,
@@ -566,7 +551,7 @@ export function TCCTable({
       <Card className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-lg">
         <CardContent className="p-6 space-y-6">
           {/* Modern Header */}
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap gap-4">
             <div className="space-y-1">
               <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-lg">
@@ -619,9 +604,8 @@ export function TCCTable({
                     placeholder="Pesquisar TCCs..."
                     value={searchInput}
                     onChange={(event) => setSearchInput(event.target.value)}
-                    className={`pl-10 ${
-                      isSearching ? "pr-10" : ""
-                    } bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-green-500 focus:border-transparent`}
+                    className={`pl-10 ${isSearching ? "pr-10" : ""
+                      } bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-green-500 focus:border-transparent`}
                   />
                 </div>
 
@@ -630,9 +614,8 @@ export function TCCTable({
                   variant="outline"
                   size="sm"
                   onClick={() => setShowFilters(!showFilters)}
-                  className={`gap-2 ${
-                    showFilters ? "bg-gray-100 dark:bg-gray-700" : ""
-                  }`}
+                  className={`gap-2 ${showFilters ? "bg-gray-100 dark:bg-gray-700" : ""
+                    }`}
                 >
                   <SlidersHorizontal className="h-4 w-4" />
                   Filtros
@@ -729,8 +712,8 @@ export function TCCTable({
                             {filters.type === "all"
                               ? "Todos os tipos"
                               : typeLabels[
-                                  filters.type as keyof typeof typeLabels
-                                ]}
+                              filters.type as keyof typeof typeLabels
+                              ]}
                             <ChevronDown className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
@@ -824,9 +807,9 @@ export function TCCTable({
                           {header.isPlaceholder
                             ? null
                             : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
                         </TableHead>
                       );
                     })}

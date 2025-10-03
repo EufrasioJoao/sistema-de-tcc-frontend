@@ -3,13 +3,10 @@
 import * as React from "react";
 import {
   ColumnDef,
-  ColumnFiltersState,
   SortingState,
   VisibilityState,
   flexRender,
   getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
@@ -53,18 +50,40 @@ import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.share
 import { useUserData } from "@/contexts/app-context";
 import ActivationSwitch from "./activation-switch";
 
+interface DataTableDemoProps {
+  router: AppRouterInstance;
+  users: User[];
+  pagination: {
+    currentPage: number;
+    totalPages: number;
+    totalCount: number;
+    limit: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+  };
+  onPageChange: (page: number) => void;
+  searchTerm: string;
+  onSearchChange: (search: string) => void;
+  roleFilter: string;
+  onRoleFilterChange: (role: string) => void;
+  statusFilter: string;
+  onStatusFilterChange: (status: string) => void;
+}
+
 export function DataTableDemo({
   router,
   users,
-}: {
-  router: AppRouterInstance;
-  users: User[];
-}) {
+  pagination,
+  onPageChange,
+  searchTerm,
+  onSearchChange,
+  roleFilter,
+  onRoleFilterChange,
+  statusFilter,
+  onStatusFilterChange,
+}: DataTableDemoProps) {
   const { user } = useUserData();
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
@@ -154,18 +173,16 @@ export function DataTableDemo({
           <motion.span
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm ${
-              row.original.is_active
-                ? "bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200 dark:from-green-900/30 dark:to-emerald-900/30 dark:text-green-300 dark:border-green-700"
-                : "bg-gradient-to-r from-red-100 to-rose-100 text-red-800 border border-red-200 dark:from-red-900/30 dark:to-rose-900/30 dark:text-red-300 dark:border-red-700"
-            }`}
+            className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm ${row.original.is_active
+              ? "bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200 dark:from-green-900/30 dark:to-emerald-900/30 dark:text-green-300 dark:border-green-700"
+              : "bg-gradient-to-r from-red-100 to-rose-100 text-red-800 border border-red-200 dark:from-red-900/30 dark:to-rose-900/30 dark:text-red-300 dark:border-red-700"
+              }`}
           >
             <div
-              className={`w-2 h-2 rounded-full mr-2 ${
-                row.original.is_active
-                  ? "bg-green-500 animate-pulse"
-                  : "bg-red-500"
-              }`}
+              className={`w-2 h-2 rounded-full mr-2 ${row.original.is_active
+                ? "bg-green-500 animate-pulse"
+                : "bg-red-500"
+                }`}
             />
             {row.original.is_active ? "Ativo" : "Inativo"}
           </motion.span>
@@ -195,9 +212,8 @@ export function DataTableDemo({
             <motion.span
               initial={{ x: 20, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
-              className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold text-white bg-gradient-to-r ${
-                roleColors[role as UserRoles] || "from-gray-500 to-gray-600"
-              } shadow-lg`}
+              className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold text-white bg-gradient-to-r ${roleColors[role as UserRoles] || "from-gray-500 to-gray-600"
+                } shadow-lg`}
             >
               <Shield className="w-3 h-3 mr-1.5" />
               {roleMapping[role] || role}
@@ -253,19 +269,17 @@ export function DataTableDemo({
     data: users,
     columns,
     onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     state: {
       sorting,
-      columnFilters,
       columnVisibility,
       rowSelection,
     },
+    manualPagination: true,
+    pageCount: pagination.totalPages,
   });
 
   return (
@@ -282,7 +296,7 @@ export function DataTableDemo({
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
       >
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 flex-wrap">
           <div className="flex items-center space-x-3">
             <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
               <User2 className="h-5 w-5 text-blue-600 dark:text-blue-400" />
@@ -292,29 +306,51 @@ export function DataTableDemo({
                 Gerenciamento de Usuários
               </h3>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                {table.getFilteredRowModel().rows.length} usuários encontrados
+                {pagination.totalCount} usuários encontrados
               </p>
             </div>
           </div>
 
-          <div className="flex items-center space-x-3 w-full sm:w-auto">
+          <div className="flex items-center space-x-3 w-full sm:w-auto flex-wrap gap-3">
             <div className="relative flex-1 sm:flex-none">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
                 placeholder="Buscar por nome..."
-                value={
-                  (table.getColumn("first_name")?.getFilterValue() as string) ??
-                  ""
-                }
-                onChange={(event) =>
-                  table
-                    .getColumn("first_name")
-                    ?.setFilterValue(event.target.value)
-                }
+                value={searchTerm}
+                onChange={(event) => onSearchChange(event.target.value)}
                 className="pl-10 w-full sm:w-64 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
 
+            {/* Role Filter */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                >
+                  <Shield className="mr-2 h-4 w-4" />
+                  {roleFilter ? roleMapping[roleFilter] || "Perfil" : "Perfil"}
+                  <ChevronDown className="ml-2 h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem onClick={() => onRoleFilterChange("")}>
+                  Todos os perfis
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                {Object.entries(roleMapping).map(([key, value]) => (
+                  <DropdownMenuItem
+                    key={key}
+                    onClick={() => onRoleFilterChange(key)}
+                  >
+                    {value}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Status Filter */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -322,6 +358,31 @@ export function DataTableDemo({
                   className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 >
                   <Filter className="mr-2 h-4 w-4" />
+                  {statusFilter === "active" ? "Ativo" : statusFilter === "inactive" ? "Inativo" : "Status"}
+                  <ChevronDown className="ml-2 h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem onClick={() => onStatusFilterChange("")}>
+                  Todos os status
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => onStatusFilterChange("active")}>
+                  Ativo
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onStatusFilterChange("inactive")}>
+                  Inativo
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                >
+                  <Settings className="mr-2 h-4 w-4" />
                   Colunas
                   <ChevronDown className="ml-2 h-4 w-4" />
                 </Button>
@@ -380,9 +441,9 @@ export function DataTableDemo({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
                   );
                 })}
@@ -461,19 +522,18 @@ export function DataTableDemo({
       >
         <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
           <span>
-            Página {table.getState().pagination.pageIndex + 1} de{" "}
-            {table.getPageCount()}
+            Página {pagination.currentPage} de {pagination.totalPages}
           </span>
           <span className="text-gray-400">•</span>
-          <span>{table.getFilteredRowModel().rows.length} total</span>
+          <span>{pagination.totalCount} total</span>
         </div>
 
         <div className="flex items-center space-x-2">
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
+            onClick={() => onPageChange(pagination.currentPage - 1)}
+            disabled={!pagination.hasPrevPage}
             className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
           >
             Anterior
@@ -481,8 +541,8 @@ export function DataTableDemo({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
+            onClick={() => onPageChange(pagination.currentPage + 1)}
+            disabled={!pagination.hasNextPage}
             className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
           >
             Próximo

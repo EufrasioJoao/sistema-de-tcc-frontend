@@ -235,7 +235,7 @@ export function EditTCCDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-[95vw] max-w-2xl max-h-[95vh] overflow-y-auto  sm:mx-auto">
         <DialogHeader>
           <DialogTitle>Editar TCC</DialogTitle>
           <DialogDescription>
@@ -492,8 +492,8 @@ export function EditTCCDialog({
                 {loading
                   ? "Salvando..."
                   : uploadingDefenseFile
-                  ? "Enviando ata..."
-                  : "Salvar Alterações"}
+                    ? "Enviando ata..."
+                    : "Salvar Alterações"}
               </Button>
             </DialogFooter>
           </form>

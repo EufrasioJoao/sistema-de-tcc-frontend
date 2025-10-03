@@ -36,9 +36,9 @@ export function DeleteTCCDialog({ open, onOpenChange, tcc, onTCCDeleted }: Delet
   const handleDelete = async () => {
     try {
       setLoading(true);
-      
-      const response = await api.delete(`/api/tccs/${tcc.id}`);
-      
+
+      const response = await api.delete(`/api/tccs/${tcc?.id}`);
+
       if (response.data.success) {
         toast.success("TCC removido com sucesso!");
         onTCCDeleted();
@@ -56,7 +56,7 @@ export function DeleteTCCDialog({ open, onOpenChange, tcc, onTCCDeleted }: Delet
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="w-[95vw] max-w-2xl max-h-[95vh] overflow-y-auto  sm:mx-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <AlertTriangle className="h-5 w-5 text-red-500" />
@@ -75,33 +75,33 @@ export function DeleteTCCDialog({ open, onOpenChange, tcc, onTCCDeleted }: Delet
             <div className="space-y-2 text-sm">
               <div>
                 <span className="font-medium">Título:</span>
-                <p className="text-gray-700 dark:text-gray-300 mt-1">{tcc.title}</p>
+                <p className="text-gray-700 dark:text-gray-300 mt-1">{tcc?.title}</p>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <span className="font-medium">Tipo:</span>
-                  <p className="text-gray-700 dark:text-gray-300">{typeLabels[tcc.type]}</p>
+                  <p className="text-gray-700 dark:text-gray-300">{typeLabels[tcc?.type]}</p>
                 </div>
                 <div>
                   <span className="font-medium">Ano:</span>
-                  <p className="text-gray-700 dark:text-gray-300">{tcc.year}</p>
+                  <p className="text-gray-700 dark:text-gray-300">{tcc?.year}</p>
                 </div>
               </div>
               <div>
                 <span className="font-medium">Autor:</span>
                 <p className="text-gray-700 dark:text-gray-300">
-                  {tcc.author.firstName} {tcc.author.lastName}
+                  {tcc?.author?.firstName} {tcc?.author?.lastName}
                 </p>
               </div>
               <div>
                 <span className="font-medium">Supervisor:</span>
                 <p className="text-gray-700 dark:text-gray-300">
-                  {tcc.supervisor.first_name} {tcc.supervisor.last_name}
+                  {tcc?.supervisor?.first_name} {tcc?.supervisor?.last_name}
                 </p>
               </div>
               <div>
                 <span className="font-medium">Curso:</span>
-                <p className="text-gray-700 dark:text-gray-300">{tcc.course.name}</p>
+                <p className="text-gray-700 dark:text-gray-300">{tcc?.course?.name}</p>
               </div>
             </div>
           </div>

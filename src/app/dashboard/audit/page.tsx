@@ -19,6 +19,7 @@ import {
 import { AuditStatistics } from "./_components/AuditStatistics";
 import { AuditTable } from "./_components/AuditTable";
 import { AuditFilters } from "./_components/AuditFilters";
+import { AuditCharts } from "./_components/AuditCharts";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
 
@@ -61,6 +62,20 @@ interface AuditStatisticsData {
   uniqueUsers: number;
   actionBreakdown: Record<string, number>;
   period: string;
+  timeSeriesData?: {
+    dailyActivity: Array<{
+      date: string;
+      VIEW_FILE: number;
+      DOWNLOAD_FILE: number;
+      UPLOAD_FILE: number;
+      EDIT_FILE: number;
+      total: number;
+    }>;
+    hourlyActivity: Array<{
+      hour: string;
+      actions: number;
+    }>;
+  };
 }
 
 interface AuditFilters {
@@ -155,7 +170,7 @@ export default function AuditPage() {
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="container mx-auto py-6 space-y-6">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -219,26 +234,29 @@ export default function AuditPage() {
           </TabsContent>
 
           <TabsContent value="analytics" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Activity className="h-5 w-5" />
-                  Análises Detalhadas
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-12">
-                  <Activity className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">
-                    Em Desenvolvimento
-                  </h3>
-                  <p className="text-muted-foreground">
-                    Análises avançadas e relatórios detalhados estarão
-                    disponíveis em breve.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+            {statistics?.timeSeriesData ? (
+              <AuditCharts timeSeriesData={statistics.timeSeriesData} />
+            ) : (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Activity className="h-5 w-5" />
+                    Análises Detalhadas
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center py-12">
+                    <Activity className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-semibold mb-2">
+                      Carregando Análises
+                    </h3>
+                    <p className="text-muted-foreground">
+                      Preparando gráficos e análises detalhadas...
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
         </Tabs>
       </motion.div>

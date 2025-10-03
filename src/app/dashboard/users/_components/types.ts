@@ -9,5 +9,8 @@ export interface UserStats {
   inactiveUsers: number;
   rolesCount: Record<string, number>;
   barChartData: ChartData[];
-  lineChartData: ChartData[];
+  areaChartData: {
+    date: string;
+    usuarios: number;
+}[]
 }

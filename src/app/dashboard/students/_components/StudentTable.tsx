@@ -1,41 +1,28 @@
 "use client";
 
-import React from "react";
-import { motion } from "framer-motion";
+import * as React from "react";
+import { useState, useEffect } from "react";
+import { useDebounce } from "@/hooks/useDebounce";
+import { motion, AnimatePresence } from "framer-motion";
+import { api } from "@/lib/api";
 import {
   ColumnDef,
   ColumnFiltersState,
-  SortingState,
-  VisibilityState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  SortingState,
   useReactTable,
+  VisibilityState,
 } from "@tanstack/react-table";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import {
   ArrowUpDown,
+  ChevronDown,
   MoreHorizontal,
+  Search,
+  Filter,
   Eye,
   Edit,
   Trash2,
@@ -44,7 +31,32 @@ import {
   GraduationCap,
   BookOpen,
   User,
+  RefreshCw,
+  X,
 } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
 
 interface Student {
   id: string;
@@ -63,27 +75,36 @@ interface Student {
   };
 }
 
-interface Props {
-  students: Student[];
-  loading: boolean;
-  onRefresh: () => void;
+interface PaginationData {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+}
+
+interface Filters {
+  search: string;
+  course: string;
+  sortBy: string;
+  sortOrder: "asc" | "desc";
+}
+
+interface StudentTableProps {
+  refreshTrigger: number;
   onEdit: (student: Student) => void;
   onDelete: (student: Student) => void;
 }
 
-// Loading skeleton component
-const LoadingSkeleton = () => (
-  <div className="space-y-4">
-    <div className="flex items-center justify-between">
-      <Skeleton className="h-8 w-48" />
-      <Skeleton className="h-8 w-24" />
-    </div>
+const TableSkeleton = () => (
+  <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
     <Table>
       <TableHeader>
-        <TableRow className="border-b border-gray-200 dark:border-gray-700">
-          {[1, 2, 3, 4, 5].map((i) => (
+        <TableRow className="bg-gray-50 dark:bg-gray-800/50">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
             <TableHead key={i} className="px-6 py-4">
-              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-4 w-20" />
             </TableHead>
           ))}
         </TableRow>
@@ -94,7 +115,7 @@ const LoadingSkeleton = () => (
             key={i}
             className="border-b border-gray-100 dark:border-gray-800"
           >
-            {[1, 2, 3, 4, 5].map((j) => (
+            {[1, 2, 3, 4, 5, 6].map((j) => (
               <TableCell key={j} className="px-6 py-4">
                 <Skeleton className="h-6 w-full" />
               </TableCell>
@@ -107,12 +128,26 @@ const LoadingSkeleton = () => (
 );
 
 export function StudentTable({
-  students,
-  loading,
-  onRefresh,
+  refreshTrigger,
   onEdit,
   onDelete,
-}: Props) {
+}: StudentTableProps) {
+  const [students, setStudents] = useState<Student[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [pagination, setPagination] = useState<PaginationData>({
+    page: 1,
+    limit: 10,
+    total: 0,
+    totalPages: 0,
+    hasNextPage: false,
+    hasPreviousPage: false,
+  });
+  const [filters, setFilters] = useState<Filters>({
+    search: "",
+    course: "",
+    sortBy: "createdAt",
+    sortOrder: "desc",
+  });
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -121,22 +156,94 @@ export function StudentTable({
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
+  const debouncedSearch = useDebounce(filters.search, 500);
+
+  // Fetch students
+  const fetchStudents = async () => {
+    try {
+      setLoading(true);
+      const params = new URLSearchParams({
+        page: pagination.page.toString(),
+        limit: pagination.limit.toString(),
+        search: debouncedSearch,
+        sortBy: filters.sortBy,
+        sortOrder: filters.sortOrder,
+      });
+
+      if (filters.course) {
+        params.append("course", filters.course);
+      }
+
+      const response = await api.get(`/api/students?${params.toString()}`);
+
+      if (response.data.success) {
+        setStudents(response.data.students);
+        setPagination(response.data.pagination);
+      }
+    } catch (error) {
+      console.error("Error fetching students:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchStudents();
+  }, [pagination.page, pagination.limit, debouncedSearch, filters.sortBy, filters.sortOrder, filters.course, refreshTrigger]);
+
+  const handlePageChange = (newPage: number) => {
+    setPagination((prev) => ({ ...prev, page: newPage }));
+  };
+
+  const handleRefresh = () => {
+    fetchStudents();
+  };
+
   const columns: ColumnDef<Student>[] = [
     {
-      accessorKey: "firstName",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="h-auto p-0 font-semibold text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
-        >
-          <div className="flex items-center">
-            <User className="mr-2 h-4 w-4 text-gray-600 dark:text-gray-400" />
-            <span>Nome</span>
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </div>
-        </Button>
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Selecionar todos"
+        />
       ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Selecionar linha"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: "firstName",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => {
+              const isAsc = filters.sortBy === "firstName" && filters.sortOrder === "asc";
+              setFilters((prev) => ({
+                ...prev,
+                sortBy: "firstName",
+                sortOrder: isAsc ? "desc" : "asc",
+              }));
+            }}
+            className="h-auto p-0 font-semibold text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+          >
+            <User className="mr-2 h-4 w-4" />
+            Nome do Estudante
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
       cell: ({ row }) => {
         const student = row.original;
         return (
@@ -146,7 +253,7 @@ export function StudentTable({
               {student.lastName.charAt(0)}
             </div>
             <div className="flex flex-col">
-              <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+              <span className="font-medium text-gray-900 dark:text-gray-100">
                 {student.firstName} {student.lastName}
               </span>
               <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center">
@@ -160,107 +267,144 @@ export function StudentTable({
     },
     {
       accessorKey: "studentNumber",
-      header: () => (
-        <div className="flex items-center">
-          <span className="font-semibold text-gray-700 dark:text-gray-300">
-            Codigo de Estudante
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => {
+              const isAsc = filters.sortBy === "studentNumber" && filters.sortOrder === "asc";
+              setFilters((prev) => ({
+                ...prev,
+                sortBy: "studentNumber",
+                sortOrder: isAsc ? "desc" : "asc",
+              }));
+            }}
+            className="h-auto p-0 font-semibold text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+          >
+            Código de Estudante
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="flex items-center space-x-2 py-2">
+          <span className="font-mono text-sm bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+            {row.getValue("studentNumber")}
           </span>
         </div>
-      ),
-      cell: ({ row }) => (
-        <span className="font-mono text-sm bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
-          {row.getValue("studentNumber")}
-        </span>
       ),
     },
     {
       accessorKey: "course",
-      header: () => (
-        <div className="flex items-center">
-          <GraduationCap className="mr-2 h-4 w-4 text-gray-600 dark:text-gray-400" />
-          <span className="font-semibold text-gray-700 dark:text-gray-300">
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => {
+              const isAsc = filters.sortBy === "course" && filters.sortOrder === "asc";
+              setFilters((prev) => ({
+                ...prev,
+                sortBy: "course",
+                sortOrder: isAsc ? "desc" : "asc",
+              }));
+            }}
+            className="h-auto p-0 font-semibold text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400"
+          >
+            <GraduationCap className="mr-2 h-4 w-4" />
             Curso
-          </span>
-        </div>
-      ),
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
       cell: ({ row }) => {
         const course = row.original.course;
         return (
-          <Badge
-            variant="outline"
-            className="bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-700"
-          >
-            {course.name}
-          </Badge>
+          <div className="flex items-center justify-center py-2">
+            <Badge
+              variant="secondary"
+              className="bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
+            >
+              <GraduationCap className="w-3 h-3 mr-1.5" />
+              {course.name}
+            </Badge>
+          </div>
         );
       },
     },
     {
       accessorKey: "_count.tccs",
-      header: () => (
-        <div className="flex items-center">
-          <BookOpen className="mr-2 h-4 w-4 text-gray-600 dark:text-gray-400" />
-          <span className="font-semibold text-gray-700 dark:text-gray-300">
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => {
+              const isAsc = filters.sortBy === "tccs" && filters.sortOrder === "asc";
+              setFilters((prev) => ({
+                ...prev,
+                sortBy: "tccs",
+                sortOrder: isAsc ? "desc" : "asc",
+              }));
+            }}
+            className="h-auto p-0 font-semibold text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400"
+          >
+            <BookOpen className="mr-2 h-4 w-4" />
             TCCs
-          </span>
-        </div>
-      ),
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
       cell: ({ row }) => {
         const tccCount = row.original._count.tccs;
         return (
-          <Badge
-            variant={tccCount > 0 ? "default" : "secondary"}
-            className={
-              tccCount > 0
-                ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
-                : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
-            }
-          >
-            {tccCount}
-          </Badge>
+          <div className="flex items-center justify-center py-2">
+            <Badge
+              variant="secondary"
+              className={
+                tccCount > 0
+                  ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
+                  : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+              }
+            >
+              <BookOpen className="w-3 h-3 mr-1.5" />
+              {tccCount}
+            </Badge>
+          </div>
         );
       },
     },
     {
       accessorKey: "createdAt",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="h-auto p-0 font-semibold text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
-        >
-          <span>Data de Cadastro</span>
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      ),
-      cell: ({ row }) => {
-        const date = new Date(row.getValue("createdAt"));
+      header: ({ column }) => {
         return (
-          <span className="text-sm text-gray-600 dark:text-gray-400">
-            {date.toLocaleDateString("pt-BR")}
-          </span>
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="h-auto p-0 font-semibold text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+          >
+            Data de Cadastro
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
         );
       },
+      cell: ({ row }) => (
+        <div className="text-sm text-gray-600 dark:text-gray-400 py-2">
+          {new Date(row.getValue("createdAt")).toLocaleDateString("pt-BR")}
+        </div>
+      ),
     },
     {
       id: "actions",
-      header: () => (
-        <div className="flex items-center justify-center">
-          <span className="font-semibold text-gray-700 dark:text-gray-300">
-            Ações
-          </span>
-        </div>
-      ),
+      enableHiding: false,
       cell: ({ row }) => {
         const student = row.original;
 
         return (
-          <div className="flex justify-center">
+          <div className="flex items-center justify-center">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
-                  className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                  className="h-9 w-9 p-0 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-all duration-200 hover:scale-110"
                 >
                   <span className="sr-only">Abrir menu</span>
                   <MoreHorizontal className="h-4 w-4" />
@@ -273,13 +417,6 @@ export function StudentTable({
                     Ações
                   </div>
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
-                  <Eye className="mr-2 h-4 w-4 text-blue-600" />
-                  <span className="text-gray-700 dark:text-gray-300">
-                    Ver detalhes
-                  </span>
-                </DropdownMenuItem>
                 <DropdownMenuItem
                   className="cursor-pointer hover:bg-yellow-50 dark:hover:bg-yellow-900/20 transition-colors"
                   onClick={() => onEdit(student)}
@@ -325,110 +462,257 @@ export function StudentTable({
   });
 
   if (loading) {
-    return <LoadingSkeleton />;
+    return <TableSkeleton />;
   }
 
   return (
     <motion.div
-      className="space-y-4"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
+      className="w-full"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
     >
-      <div className="rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+      {/* Enhanced Header Section */}
+      <motion.div
+        className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6 shadow-sm"
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+      >
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 flex-wrap">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+              <User className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                Lista de Estudantes
+              </h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {table.getFilteredRowModel().rows.length} estudantes encontrados
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-3 w-full sm:w-auto flex-wrap gap-3">
+            <div className="relative flex-1 sm:flex-none">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input
+                placeholder="Buscar por nome, email ou código..."
+                value={filters.search}
+                onChange={(event) =>
+                  setFilters((prev) => ({ ...prev, search: event.target.value }))
+                }
+                className="pl-10 w-full sm:w-64 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              {filters.search && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0"
+                  onClick={() => setFilters((prev) => ({ ...prev, search: "" }))}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                >
+                  <Filter className="mr-2 h-4 w-4" />
+                  Filtros
+                  <ChevronDown className="ml-2 h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuLabel>Curso</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => setFilters((prev) => ({ ...prev, course: "" }))}
+                >
+                  Todos os cursos
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRefresh}
+              className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
+            >
+              <RefreshCw className="h-4 w-4" />
+            </Button>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                >
+                  <Filter className="mr-2 h-4 w-4" />
+                  Colunas
+                  <ChevronDown className="ml-2 h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                {table
+                  .getAllColumns()
+                  .filter((column) => column.getCanHide())
+                  .map((column) => {
+                    const columnHeaderMap: { [key: string]: string } = {
+                      firstName: "Nome",
+                      studentNumber: "Código",
+                      course: "Curso",
+                      "_count.tccs": "TCCs",
+                      createdAt: "Data de Cadastro",
+                    };
+                    const displayText = columnHeaderMap[column.id] || column.id;
+                    return (
+                      <DropdownMenuCheckboxItem
+                        key={column.id}
+                        className="capitalize"
+                        checked={column.getIsVisible()}
+                        onCheckedChange={(value) =>
+                          column.toggleVisibility(!!value)
+                        }
+                      >
+                        {displayText}
+                      </DropdownMenuCheckboxItem>
+                    );
+                  })}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Enhanced Table */}
+      <motion.div
+        className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden"
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.2 }}
+      >
         <Table>
-          <TableHeader className="bg-gray-50 dark:bg-gray-800/50">
+          <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow
                 key={headerGroup.id}
-                className="border-b border-gray-200 dark:border-gray-700"
+                className="bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
               >
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id} className="px-6 py-4">
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <TableHead
+                      key={header.id}
+                      className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider"
+                    >
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
                           header.column.columnDef.header,
                           header.getContext()
                         )}
-                  </TableHead>
-                ))}
+                    </TableHead>
+                  );
+                })}
               </TableRow>
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row, index) => (
-                <motion.tr
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                  className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="px-6 py-4">
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </motion.tr>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  <div className="flex flex-col items-center justify-center space-y-3">
-                    <div className="w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
-                      <User className="h-6 w-6 text-gray-400" />
+            <AnimatePresence>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row, index) => (
+                  <motion.tr
+                    key={row.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ delay: index * 0.05 }}
+                    data-state={row.getIsSelected() && "selected"}
+                    className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50 cursor-pointer transition-all duration-200 group"
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell
+                        key={cell.id}
+                        className="px-6 py-4 whitespace-nowrap group-hover:bg-gray-50/50 dark:group-hover:bg-gray-800/30 transition-colors"
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </motion.tr>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-32 text-center"
+                  >
+                    <div className="flex flex-col items-center justify-center space-y-3">
+                      <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
+                        <User className="h-8 w-8 text-gray-400" />
+                      </div>
+                      <div className="text-center">
+                        <p className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                          Nenhum estudante encontrado
+                        </p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          Tente ajustar os filtros de busca ou adicione um novo
+                          estudante
+                        </p>
+                      </div>
                     </div>
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                        Nenhum estudante encontrado
-                      </p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Tente ajustar os filtros de busca ou adicione um novo
-                        estudante
-                      </p>
-                    </div>
-                  </div>
-                </TableCell>
-              </TableRow>
-            )}
+                  </TableCell>
+                </TableRow>
+              )}
+            </AnimatePresence>
           </TableBody>
         </Table>
-      </div>
+      </motion.div>
 
-      {/* Pagination */}
-      <div className="flex items-center justify-between space-x-2 py-4">
-        <div className="flex-1 text-sm text-gray-600 dark:text-gray-400">
-          {table.getFilteredSelectedRowModel().rows.length} de{" "}
-          {table.getFilteredRowModel().rows.length} estudante(s) selecionado(s).
+      {/* Enhanced Pagination */}
+      <motion.div
+        className="flex items-center justify-between px-6 py-4 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 mt-4 shadow-sm"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+      >
+        <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+          <span>
+            Página {pagination.page} de {pagination.totalPages}
+          </span>
+          <span className="text-gray-400">•</span>
+          <span>{pagination.total} total</span>
         </div>
-        <div className="space-x-2">
+
+        <div className="flex items-center space-x-2">
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
+            onClick={() => handlePageChange(pagination.page - 1)}
+            disabled={!pagination.hasPreviousPage}
+            className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
           >
             Anterior
           </Button>
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
+            onClick={() => handlePageChange(pagination.page + 1)}
+            disabled={!pagination.hasNextPage}
+            className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
           >
             Próximo
           </Button>
         </div>
-      </div>
+      </motion.div>
     </motion.div>
   );
 }

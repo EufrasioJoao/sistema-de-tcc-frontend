@@ -1,6 +1,6 @@
 "use client";
 
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { motion } from "framer-motion";
 
 import { useState, useEffect } from "react";
 
@@ -11,7 +11,7 @@ import { EditUserPassword } from "./dialogs/edit_password";
 
 import { Info } from "./components/Info";
 import { Access } from "./components/Access";
-import { User2, Settings2 } from "lucide-react";
+import { User2, Settings2, Shield } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
 import { User } from "@/types/index";
@@ -59,20 +59,25 @@ export default function AccountPage() {
   }, [user?.id]);
 
   return (
-    <div className="">
-      <Header
-        titleDiv={
+    <div className="py-6 w-full">
+
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="w-full"
+      >
+        <div className="flex items-center justify-between pb-4 w-full">
           <div>
-            <h2 className="text-xl md:text-3xl font-bold tracking-tight flex items-center gap-2">
-              <User2 className="h-6 w-6 md:h-8 md:w-8 text-primary" />
-              Configurações da Conta
-            </h2>
+            <h1 className="text-3xl font-bold tracking-tight">Conta</h1>
             <p className="text-muted-foreground">
-              Gerencie suas informações pessoais e preferências
+              Monitore e analisesua conta
             </p>
           </div>
-        }
-      />
+          <Shield className="h-8 w-8 text-primary" />
+        </div>
+      </motion.div>
 
       {loading ? (
         <Loading />

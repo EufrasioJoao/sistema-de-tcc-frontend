@@ -115,61 +115,53 @@ export default function TCCsPage() {
 
   return (
     <motion.div
-      className="mx-auto p-6 space-y-8"
+      className="mx-auto py-6 space-y-8"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
       {/* Header */}
       <motion.div
-        className="flex items-center justify-between"
-        initial={{ opacity: 0, y: -10 }}
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
+        className="w-full pb-6 border-b border-gray-200 dark:border-slate-700"
       >
-        <div className="flex items-center space-x-4">
-          <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-blue-600 rounded-xl flex items-center justify-center text-white">
-            <FileText className="h-6 w-6" />
-          </div>
+        <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
               Sistema de Gestão de TCCs
             </h1>
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-slate-600 dark:text-slate-400">
               Gerencie trabalhos de conclusão de curso, dissertações e teses
             </p>
           </div>
-        </div>
 
-        <div className="flex items-center space-x-3">
-          <Button
-            onClick={() => setSearchDialogOpen(true)}
-            variant="outline"
-            className="gap-2 border-blue-200 text-blue-700 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-300 dark:hover:bg-blue-950"
-          >
-            <Search className="h-4 w-4" />
-            Busca Inteligente
-          </Button>
-          <PermissionGuard requireCreateTCC>
+          <div className="flex items-center space-x-3 flex-wrap">
             <Button
-              onClick={handleAddTCC}
-              className="gap-2 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700"
+              onClick={() => setSearchDialogOpen(true)}
+              variant="outline"
+              size="sm"
+              className="border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"
             >
-              <Plus className="h-4 w-4" />
-              Adicionar TCC
+              <Search className="mr-2 h-4 w-4" />
+              Busca Inteligente
             </Button>
-          </PermissionGuard>
+            <PermissionGuard requireCreateTCC>
+              <Button
+                onClick={handleAddTCC}
+                size="sm"
+                className="border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Adicionar TCC
+              </Button>
+            </PermissionGuard>
+          </div>
         </div>
       </motion.div>
 
       {/* Statistics Cards */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-      >
-        <TCCCards refreshTrigger={refreshTrigger} />
-      </motion.div>
+      <TCCCards refreshTrigger={refreshTrigger} />
 
       <motion.div
         initial={{ opacity: 0, y: 10 }}

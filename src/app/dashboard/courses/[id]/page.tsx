@@ -35,7 +35,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -115,7 +114,7 @@ export default function CourseDetailsPage() {
 
   if (loading) {
     return (
-      <div className="mx-auto p-6 space-y-8">
+      <div className="mx-auto py-6 space-y-8">
         <div className="flex items-center space-x-4">
           <Skeleton className="h-10 w-10 rounded-lg" />
           <div>
@@ -179,14 +178,14 @@ export default function CourseDetailsPage() {
 
   return (
     <motion.div
-      className="mx-auto p-6 space-y-8"
+      className="mx-auto py-6 space-y-8"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
       {/* Header */}
       <motion.div
-        className="flex items-center justify-between"
+        className="flex items-center justify-between flex-wrap gap-4"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
@@ -355,7 +354,7 @@ export default function CourseDetailsPage() {
                 {Math.floor(
                   (new Date().getTime() -
                     new Date(course.createdAt).getTime()) /
-                    (1000 * 60 * 60 * 24)
+                  (1000 * 60 * 60 * 24)
                 )}{" "}
                 dias
               </Badge>
@@ -379,10 +378,6 @@ export default function CourseDetailsPage() {
                   <Users className="h-5 w-5 text-green-600" />
                   Estudantes ({course.students.length})
                 </CardTitle>
-                <Button size="sm" className="gap-2">
-                  <Plus className="h-4 w-4" />
-                  Adicionar
-                </Button>
               </div>
             </CardHeader>
             <CardContent>
@@ -391,7 +386,7 @@ export default function CourseDetailsPage() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Nome</TableHead>
-                      <TableHead>Codigo de Estudante</TableHead>
+                      <TableHead className="truncate">Codigo de Estudante</TableHead>
                       <TableHead className="w-12"></TableHead>
                     </TableRow>
                   </TableHeader>
@@ -416,23 +411,6 @@ export default function CourseDetailsPage() {
                         </TableCell>
                         <TableCell className="font-mono text-sm">
                           {student.studentNumber}
-                        </TableCell>
-                        <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm">
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem>Ver perfil</DropdownMenuItem>
-                              <DropdownMenuItem>Editar</DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem className="text-red-600">
-                                Remover
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -461,10 +439,6 @@ export default function CourseDetailsPage() {
                   <FileText className="h-5 w-5 text-purple-600" />
                   TCCs ({course.tccs.length})
                 </CardTitle>
-                <Button size="sm" className="gap-2">
-                  <Plus className="h-4 w-4" />
-                  Adicionar
-                </Button>
               </div>
             </CardHeader>
             <CardContent>
@@ -497,23 +471,6 @@ export default function CourseDetailsPage() {
                           >
                             {tcc.type}
                           </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm">
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem>Ver detalhes</DropdownMenuItem>
-                              <DropdownMenuItem>Editar</DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem className="text-red-600">
-                                Remover
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
                         </TableCell>
                       </TableRow>
                     ))}

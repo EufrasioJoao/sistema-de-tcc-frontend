@@ -121,30 +121,30 @@ export function ViewTCCDialog({ open, onOpenChange, tcc }: ViewTCCDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-[95vw] max-w-3xl max-h-[95vh] overflow-y-auto  sm:mx-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+          <DialogTitle className="flex items-center gap-2 text-lg sm:text-xl">
             <FileText className="h-5 w-5 text-green-600" />
             Detalhes do TCC
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-sm sm:text-base">
             Informações completas do trabalho de conclusão de curso.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {/* Title and Type */}
           <div>
-            <div className="flex items-start justify-between gap-4 mb-3">
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 leading-tight">
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-3">
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100 leading-tight">
                 {tcc.title}
               </h3>
-              <Badge className={typeColors[tcc.type]}>
+              <Badge className={`${typeColors[tcc.type]} text-xs sm:text-sm flex-shrink-0`}>
                 {typeLabels[tcc.type]}
               </Badge>
             </div>
 
-            <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-gray-600 dark:text-gray-400">
               <div className="flex items-center gap-1">
                 <Calendar className="h-4 w-4" />
                 <span>Ano: {tcc.year}</span>
@@ -159,35 +159,35 @@ export function ViewTCCDialog({ open, onOpenChange, tcc }: ViewTCCDialogProps) {
           <Separator />
 
           {/* Author and Supervisor */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             <div className="space-y-3">
-              <h4 className="font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+              <h4 className="font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2 text-sm sm:text-base">
                 <User className="h-4 w-4 text-blue-500" />
                 Autor
               </h4>
-              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-                <p className="font-medium text-gray-900 dark:text-gray-100">
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 sm:p-4">
+                <p className="font-medium text-gray-900 dark:text-gray-100 text-sm sm:text-base">
                   {tcc.author?.firstName} {tcc.author?.lastName}
                 </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 break-all">
                   Codigo de Estudante: {tcc.author?.studentNumber || "N/A"}
                 </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 break-all">
                   Email: {tcc.author?.email || "N/A"}
                 </p>
               </div>
             </div>
 
             <div className="space-y-3">
-              <h4 className="font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+              <h4 className="font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2 text-sm sm:text-base">
                 <GraduationCap className="h-4 w-4 text-purple-500" />
                 Supervisor
               </h4>
-              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-                <p className="font-medium text-gray-900 dark:text-gray-100">
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 sm:p-4">
+                <p className="font-medium text-gray-900 dark:text-gray-100 text-sm sm:text-base">
                   {tcc.supervisor?.first_name} {tcc.supervisor?.last_name}
                 </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 break-all">
                   Email: {tcc.supervisor?.email || "N/A"}
                 </p>
               </div>
@@ -196,12 +196,12 @@ export function ViewTCCDialog({ open, onOpenChange, tcc }: ViewTCCDialogProps) {
 
           {/* Course */}
           <div className="space-y-3">
-            <h4 className="font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+            <h4 className="font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2 text-sm sm:text-base">
               <BookOpen className="h-4 w-4 text-green-500" />
               Curso
             </h4>
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-              <p className="font-medium text-gray-900 dark:text-gray-100">
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 sm:p-4">
+              <p className="font-medium text-gray-900 dark:text-gray-100 text-sm sm:text-base">
                 {tcc.course?.name || "N/A"}
               </p>
             </div>
@@ -210,12 +210,12 @@ export function ViewTCCDialog({ open, onOpenChange, tcc }: ViewTCCDialogProps) {
           {/* Keywords */}
           {tcc.keywords && (
             <div className="space-y-3">
-              <h4 className="font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+              <h4 className="font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2 text-sm sm:text-base">
                 <Tag className="h-4 w-4 text-orange-500" />
                 Palavras-chave
               </h4>
-              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-                <p className="text-gray-700 dark:text-gray-300">
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 sm:p-4">
+                <p className="text-gray-700 dark:text-gray-300 text-sm sm:text-base">
                   {tcc.keywords}
                 </p>
               </div>
@@ -226,47 +226,48 @@ export function ViewTCCDialog({ open, onOpenChange, tcc }: ViewTCCDialogProps) {
 
           {/* Files */}
           <div className="space-y-4">
-            <h4 className="font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+            <h4 className="font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2 text-sm sm:text-base">
               <FileText className="h-4 w-4 text-blue-500" />
               Arquivos
             </h4>
 
             {/* Main TCC File */}
-            <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <FileText className="h-6 w-6 text-blue-500" />
-                  <div>
-                    <p className="font-medium text-gray-900 dark:text-gray-100">
+            <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 sm:p-4">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div className="flex items-start gap-3 min-w-0 flex-1">
+                  <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-blue-500 flex-shrink-0 mt-0.5" />
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium text-gray-900 dark:text-gray-100 text-sm sm:text-base truncate">
                       {tcc.file?.displayName || "Arquivo não disponível"}
                     </p>
-                    <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                       <span>Tamanho: {tcc.file ? formatFileSize(tcc.file.size) : "N/A"}</span>
                       <span>Enviado em: {tcc.file ? formatDate(tcc.file.created_at) : "N/A"}</span>
                     </div>
                   </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-shrink-0">
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={handleViewMain}
-                    className="gap-2"
+                    className="gap-1 sm:gap-2 text-xs sm:text-sm"
                   >
-                    <Eye className="h-4 w-4" />
-                    Visualizar
+                    <Eye className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <span className="hidden sm:inline">Visualizar</span>
+                    <span className="sm:hidden">Ver</span>
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={handleDownloadMain}
                     disabled={downloadingMain}
-                    className="gap-2"
+                    className="gap-1 sm:gap-2 text-xs sm:text-sm"
                   >
                     {downloadingMain ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin" />
                     ) : (
-                      <Download className="h-4 w-4" />
+                      <Download className="h-3 w-3 sm:h-4 sm:w-4" />
                     )}
                     {downloadingMain ? "Baixando..." : "Download"}
                   </Button>
@@ -276,49 +277,49 @@ export function ViewTCCDialog({ open, onOpenChange, tcc }: ViewTCCDialogProps) {
 
             {/* Defense Record File */}
             {tcc.defenseRecordFile && (
-              <div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <FileText className="h-6 w-6 text-green-500" />
-                    <div>
-                      <p className="font-medium text-gray-900 dark:text-gray-100">
+              <div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg p-3 sm:p-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div className="flex items-start gap-3 min-w-0 flex-1">
+                    <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-green-500 flex-shrink-0 mt-0.5" />
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium text-gray-900 dark:text-gray-100 text-sm sm:text-base">
                         Ata de Defesa
                       </p>
-                      <p className="text-sm font-medium text-green-700 dark:text-green-300">
+                      <p className="text-xs sm:text-sm font-medium text-green-700 dark:text-green-300 truncate">
                         {tcc.defenseRecordFile.displayName}
                       </p>
-                      <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                         <span>
                           Tamanho: {formatFileSize(tcc.defenseRecordFile.size)}
                         </span>
                         <span>
-                          Enviado em:{" "}
-                          {formatDate(tcc.defenseRecordFile.created_at)}
+                          Enviado em: {formatDate(tcc.defenseRecordFile.created_at)}
                         </span>
                       </div>
                     </div>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 flex-shrink-0">
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={handleViewDefense}
-                      className="gap-2"
+                      className="gap-1 sm:gap-2 text-xs sm:text-sm"
                     >
-                      <Eye className="h-4 w-4" />
-                      Visualizar
+                      <Eye className="h-3 w-3 sm:h-4 sm:w-4" />
+                      <span className="hidden sm:inline">Visualizar</span>
+                      <span className="sm:hidden">Ver</span>
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={handleDownloadDefense}
                       disabled={downloadingDefense}
-                      className="gap-2"
+                      className="gap-1 sm:gap-2 text-xs sm:text-sm"
                     >
                       {downloadingDefense ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin" />
                       ) : (
-                        <Download className="h-4 w-4" />
+                        <Download className="h-3 w-3 sm:h-4 sm:w-4" />
                       )}
                       {downloadingDefense ? "Baixando..." : "Download"}
                     </Button>
@@ -330,23 +331,24 @@ export function ViewTCCDialog({ open, onOpenChange, tcc }: ViewTCCDialogProps) {
 
           {/* Metadata */}
           <Separator />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600 dark:text-gray-400">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
             <div>
               <span className="font-medium">Data de criação:</span>
-              <p>{formatDate(tcc.createdAt)}</p>
+              <p className="break-all">{formatDate(tcc.createdAt)}</p>
             </div>
             <div>
               <span className="font-medium">Última atualização:</span>
-              <p>{formatDate(tcc.updatedAt)}</p>
+              <p className="break-all">{formatDate(tcc.updatedAt)}</p>
             </div>
           </div>
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
           <Button
             type="button"
             variant="outline"
             onClick={() => onOpenChange(false)}
+            className="w-full sm:w-auto order-2 sm:order-1"
           >
             Fechar
           </Button>
@@ -354,7 +356,7 @@ export function ViewTCCDialog({ open, onOpenChange, tcc }: ViewTCCDialogProps) {
             type="button"
             onClick={handleDownloadMain}
             disabled={downloadingMain}
-            className="gap-2"
+            className="gap-2 w-full sm:w-auto order-1 sm:order-2"
           >
             {downloadingMain ? (
               <Loader2 className="h-4 w-4 animate-spin" />

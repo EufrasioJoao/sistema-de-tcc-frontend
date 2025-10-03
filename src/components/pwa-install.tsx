@@ -94,7 +94,7 @@ const PWAInstallPrompt = () => {
   return (
     <>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="w-[95vw] max-w-2xl max-h-[95vh] overflow-y-auto  sm:mx-auto">
           <DialogHeader className="space-y-4">
             <div className="flex items-center justify-center mb-4">
               <Image src="/logo.png" alt="Logo" width={64} height={64} />

@@ -1,7 +1,9 @@
 import { Label } from "@/components/ui/label";
+import { useUserData } from "@/contexts/app-context";
 import { User } from "@/types/index";
 
 export function Info({ user }: { user: User | null }) {
+  const data = useUserData()
   return (
     <div className="w-full p-4 rounded-xl bg-white border shadow-sm my-4 space-y-4">
       <h1 className="block font-semibold text-[0.9rem]">
@@ -12,7 +14,7 @@ export function Info({ user }: { user: User | null }) {
         <div>
           <Label className="mb-2 text-[0.9rem]">Nome</Label>
           <p className="bg-[#eee] w-full p-2 px-3 rounded mt-2  text-sm">
-            {user?.first_name}
+            {data?.user?.first_name}
           </p>
         </div>
 

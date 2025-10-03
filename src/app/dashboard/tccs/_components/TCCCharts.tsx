@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { TrendingUp } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -12,14 +11,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  ResponsiveContainer,
   PieChart,
   Pie,
-  LabelList,
-  Area,
-  AreaChart,
-  CartesianGrid,
-  XAxis,
+  LabelList
 } from "recharts";
 import {
   ChartConfig,
@@ -28,23 +22,17 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { api } from "@/lib/api";
+import { TccChart } from "../../_components/TccChart";
 
 interface TCCStatistics {
   byType: Array<{
     type: string;
     count: number;
   }>;
-  byYear: Array<{
-    year: number;
-    count: number;
-  }>;
-  monthly: Array<{
-    month: number;
-    monthName: string;
-    total: number;
-    BACHELOR: number;
-    MASTER: number;
-    DOCTORATE: number;
+  
+  areaChartData: Array<{
+    date: string;
+    tccs: number;
   }>;
 }
 
@@ -76,16 +64,11 @@ const typeChartConfig = {
   },
 } satisfies ChartConfig;
 
-const monthlyChartConfig = {
-  total: {
-    label: "Total",
-    color: "#8B5CF6",
-  },
-} satisfies ChartConfig;
 
 export function TCCCharts({ refreshTrigger }: TCCChartsProps) {
   const [statistics, setStatistics] = useState<TCCStatistics | null>(null);
   const [loading, setLoading] = useState(true);
+  const [timeRange, setTimeRange] = useState("365d");
 
   useEffect(() => {
     fetchStatistics();
@@ -127,15 +110,22 @@ export function TCCCharts({ refreshTrigger }: TCCChartsProps) {
     fill: `var(--color-${item.type})`,
   }));
 
-  const yearData = statistics.byYear.map((item) => ({
-    year: item.year.toString(),
-    count: item.count,
-  }));
-
-  const monthlyData = statistics.monthly || [];
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+
+      {/* TCCs Chart */}
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.2 }}
+        className="lg:col-span-2"
+      >
+       
+       <TccChart areaChartData={statistics.areaChartData || []} />
+      </motion.div>
+
       {/* TCCs por Tipo */}
       <motion.div
         initial={{ opacity: 0, x: -20 }}
@@ -179,67 +169,6 @@ export function TCCCharts({ refreshTrigger }: TCCChartsProps) {
             </div>
             <div className="text-muted-foreground leading-none">
               {typeData.length} tipos diferentes
-            </div>
-          </CardFooter>
-        </Card>
-      </motion.div>
-
-      {/* TCCs por Mês */}
-      <motion.div
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.2 }}
-      >
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle>TCCs por Mês</CardTitle>
-            <CardDescription>
-              Distribuição mensal dos trabalhos no ano atual
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="pb-3">
-            <ChartContainer config={monthlyChartConfig}>
-              <AreaChart
-                accessibilityLayer
-                data={monthlyData}
-                margin={{
-                  left: 12,
-                  right: 12,
-                }}
-              >
-                <CartesianGrid vertical={false} />
-                <XAxis
-                  dataKey="monthName"
-                  tickLine={false}
-                  axisLine={false}
-                  tickMargin={8}
-                  tickFormatter={(value) => value.slice(0, 3)}
-                />
-                <ChartTooltip
-                  cursor={false}
-                  content={<ChartTooltipContent indicator="line" />}
-                />
-                <Area
-                  dataKey="total"
-                  type="natural"
-                  fill="var(--color-total)"
-                  fillOpacity={0.4}
-                  stroke="var(--color-total)"
-                />
-              </AreaChart>
-            </ChartContainer>
-          </CardContent>
-          <CardFooter className="pt-0">
-            <div className="flex w-full items-start gap-2 text-sm">
-              <div className="grid gap-2">
-                <div className="flex items-center gap-2 leading-none font-medium">
-                  {monthlyData.reduce((sum, month) => sum + month.total, 0)}{" "}
-                  TCCs este ano
-                </div>
-                <div className="text-muted-foreground flex items-center gap-2 leading-none">
-                  Janeiro - Dezembro {new Date().getFullYear()}
-                </div>
-              </div>
             </div>
           </CardFooter>
         </Card>

@@ -1,12 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { api } from "@/lib/api";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
-import { CourseCards } from "./_components/CourseCards";
 import { CourseCharts } from "./_components/CourseCharts";
 import { CourseTable } from "./_components/CourseTable";
 import { AddCourseDialog } from "./_components/AddCourseDialog";
@@ -20,6 +17,7 @@ interface Course {
   createdAt: string;
   updatedAt: string;
   coordinator: {
+    id: string;
     first_name: string;
     last_name: string;
     email: string;
@@ -30,68 +28,16 @@ interface Course {
   };
 }
 
-interface CourseStats {
-  totalCourses: number;
-  totalStudents: number;
-  totalTccs: number;
-  coursesWithCoordinator: number;
-  coursesWithoutCoordinator: number;
-}
-
 export default function CoursesPage() {
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
 
-  const fetchCourses = async () => {
-    try {
-      setLoading(true);
-      const response = await api.get("/api/courses");
-      if (response.data.success) {
-        setCourses(response.data.courses);
-      } else {
-        toast.error("Erro ao carregar cursos");
-      }
-    } catch (error) {
-      toast.error("Erro ao carregar cursos");
-      console.error("Error fetching courses:", error);
-    } finally {
-      setLoading(false);
-    }
+  const triggerRefresh = () => {
+    setRefreshTrigger((prev) => prev + 1);
   };
-
-  useEffect(() => {
-    fetchCourses();
-  }, []);
-
-  const calculateStats = (): CourseStats => {
-    const totalCourses = courses.length;
-    const totalStudents = courses.reduce(
-      (sum, course) => sum + course._count.students,
-      0
-    );
-    const totalTccs = courses.reduce(
-      (sum, course) => sum + course._count.tccs,
-      0
-    );
-    const coursesWithCoordinator = courses.filter(
-      (course) => course.coordinator
-    ).length;
-    const coursesWithoutCoordinator = totalCourses - coursesWithCoordinator;
-
-    return {
-      totalCourses,
-      totalStudents,
-      totalTccs,
-      coursesWithCoordinator,
-      coursesWithoutCoordinator,
-    };
-  };
-
-  const stats = calculateStats();
 
   const handleEditCourse = (course: Course) => {
     setSelectedCourse(course);
@@ -105,46 +51,44 @@ export default function CoursesPage() {
 
   return (
     <motion.div
-      className="mx-auto p-6 space-y-8"
+      className="mx-auto py-6 space-y-8"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
       {/* Header */}
       <motion.div
-        className="flex items-center justify-between"
-        initial={{ opacity: 0, y: -10 }}
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
+        className="w-full pb-6 border-b border-gray-200 dark:border-slate-700"
       >
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-            Gerenciamento de Cursos
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
-            Visualize e gerencie todos os cursos da instituição
-          </p>
-        </div>
-        <Button
-          onClick={() => setDialogOpen(true)}
-          className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300"
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          Adicionar Curso
-        </Button>
-      </motion.div>
+        <div className="flex items-center justify-between flex-wrap gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
+              Gerenciamento de Cursos
+            </h1>
+            <p className="text-slate-600 dark:text-slate-400">
+              Visualize e gerencie todos os cursos da instituição
+            </p>
+          </div>
 
-      {/* Cards Section */}
-      <CourseCards stats={stats} loading={loading} />
+          <Button
+            onClick={() => setDialogOpen(true)}
+            size="sm"
+            className="border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Adicionar Curso
+          </Button>
+        </div>
+      </motion.div>
 
       {/* Charts Section */}
       <CourseCharts />
 
       {/* Table Section */}
       <CourseTable
-        courses={courses}
-        loading={loading}
-        onRefresh={fetchCourses}
+        refreshTrigger={refreshTrigger}
         onEdit={handleEditCourse}
         onDelete={handleDeleteCourse}
       />
@@ -153,14 +97,14 @@ export default function CoursesPage() {
       <AddCourseDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}
-        onSuccess={fetchCourses}
+        onSuccess={triggerRefresh}
       />
 
       {/* Edit Course Dialog */}
       <EditCourseDialog
         open={editDialogOpen}
         onOpenChange={setEditDialogOpen}
-        onSuccess={fetchCourses}
+        onSuccess={triggerRefresh}
         course={selectedCourse}
       />
 
@@ -168,7 +112,7 @@ export default function CoursesPage() {
       <DeleteCourseDialog
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
-        onSuccess={fetchCourses}
+        onSuccess={triggerRefresh}
         course={selectedCourse}
       />
     </motion.div>

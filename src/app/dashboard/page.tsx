@@ -7,7 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Users,
@@ -20,6 +19,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { CoursesTable } from "./_components/CoursesTable";
+import { TccChart } from "./_components/TccChart";
 
 interface Course {
   id: string;
@@ -68,6 +68,10 @@ interface DashboardData {
       bachelor: number;
       master: number;
       doctorate: number;
+    }>;
+    tcc_area_chart: Array<{
+      date: string;
+      tccs: number;
     }>;
   };
   top_courses: Array<{
@@ -180,7 +184,7 @@ export default function DashboardPage() {
           animate={{ opacity: 1, y: 0 }}
           className="w-full pb-6 border-b border-gray-200 dark:border-slate-700"
         >
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
               <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
                 Bem-vindo ao Dashboard
@@ -190,6 +194,7 @@ export default function DashboardPage() {
                 acadêmicos
               </p>
             </div>
+
             <Button
               onClick={getDashboardData}
               variant="outline"
@@ -328,6 +333,15 @@ export default function DashboardPage() {
           </div>
 
           <TabsContent value="distributions" className="space-y-6">
+            {/* TCC Area Chart */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <TccChart areaChartData={dashboardData.trends.tcc_area_chart} />
+            </motion.div>
+
             <div className="grid gap-6 md:grid-cols-2">
               {/* Users by Role */}
               <motion.div
@@ -396,13 +410,12 @@ export default function DashboardPage() {
                             {type.label}
                           </span>
                           <Badge
-                            className={`shadow-lg px-4 py-2 text-lg text-white ${
-                              type.type === "BACHELOR"
+                            className={`shadow-lg px-4 py-2 text-lg text-white ${type.type === "BACHELOR"
                                 ? "bg-gradient-to-r from-blue-500 to-blue-600"
                                 : type.type === "MASTER"
-                                ? "bg-gradient-to-r from-purple-500 to-purple-600"
-                                : "bg-gradient-to-r from-orange-500 to-orange-600"
-                            }`}
+                                  ? "bg-gradient-to-r from-purple-500 to-purple-600"
+                                  : "bg-gradient-to-r from-orange-500 to-orange-600"
+                              }`}
                           >
                             {type.count}
                           </Badge>

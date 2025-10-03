@@ -169,8 +169,8 @@ export function IntelligentSearchDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[80vh] p-0">
-        <DialogHeader className="p-6 pb-0">
+      <DialogContent className="w-[95vw] max-w-2xl max-h-[95vh] overflow-y-auto  sm:mx-auto">
+        <DialogHeader className="p-4 md:p-6 pb-0">
           <DialogTitle className="flex items-center gap-2">
             <Search className="h-5 w-5 text-blue-600" />
             Busca Inteligente de TCCs
@@ -181,7 +181,7 @@ export function IntelligentSearchDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="px-6">
+        <div className="">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <Input
@@ -200,7 +200,7 @@ export function IntelligentSearchDialog({
 
         <div className="flex-1 overflow-hidden">
           <ScrollArea className="h-[400px]">
-            <div className="px-6 pb-6">
+            <div className="pb-6">
               {/* Search Results */}
               {query.trim() && (
                 <div className="space-y-4">
@@ -226,11 +226,10 @@ export function IntelligentSearchDialog({
                         transition={{ delay: index * 0.05 }}
                       >
                         <Card
-                          className={`cursor-pointer transition-all hover:shadow-md ${
-                            selectedIndex === index
-                              ? "ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-950"
-                              : "hover:bg-gray-50 dark:hover:bg-gray-800"
-                          }`}
+                          className={`cursor-pointer transition-all hover:shadow-md ${selectedIndex === index
+                            ? "ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-950"
+                            : "hover:bg-gray-50 dark:hover:bg-gray-800"
+                            }`}
                           onClick={() => handleSelectResult(result)}
                         >
                           <CardContent className="p-4">

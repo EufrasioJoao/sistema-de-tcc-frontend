@@ -72,7 +72,7 @@ export function LoginForm({
         toast.error(response.data?.message, {
           action: {
             label: "Ok",
-            onClick: () => {},
+            onClick: () => { },
           },
         });
       }
@@ -86,7 +86,7 @@ export function LoginForm({
           description: "ocorreu um erro.",
           action: {
             label: "Ok",
-            onClick: () => {},
+            onClick: () => { },
           },
         });
       } else {
@@ -165,9 +165,8 @@ export function LoginForm({
 
                 <Button
                   type="submit"
-                  className={`w-full rounded-xl ${
-                    loading ? "cursor-not-allowed" : "cursor-pointer"
-                  }`}
+                  className={`w-full rounded-xl ${loading ? "cursor-not-allowed" : "cursor-pointer"
+                    }`}
                 >
                   {loading ? <PulseLoader color="white" size={10} /> : "Entrar"}
                 </Button>
@@ -175,12 +174,7 @@ export function LoginForm({
             </form>
           </Form>
 
-          <div className="mt-4 text-center text-sm">
-            Não tem uma conta?{" "}
-            <Link href="/auth/signup" className="underline">
-              Crie uma agora
-            </Link>
-          </div>
+
         </CardContent>
       </Card>
     </div>

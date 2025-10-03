@@ -9,9 +9,6 @@ import {
   Search,
   Filter,
   Download,
-  GraduationCap,
-  BookOpen,
-  UserCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,6 +19,7 @@ import { StudentCards } from "./_components/StudentCards";
 import { AddStudentDialog } from "./_components/AddStudentDialog";
 import { EditStudentDialog } from "./_components/EditStudentDialog";
 import { DeleteStudentDialog } from "./_components/DeleteStudentDialog";
+import { StudentsChart } from "./_components/StudentsChart";
 
 interface Student {
   id: string;
@@ -42,12 +40,14 @@ interface Student {
 
 export default function StudentsPage() {
   const [students, setStudents] = useState<Student[]>([]);
+  const [areaChartData, setAreaChartData] = useState<Array<{ date: string; students: number }>>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
     fetchStudents();
@@ -59,6 +59,7 @@ export default function StudentsPage() {
       const response = await api.get("/api/students");
       if (response.data.success) {
         setStudents(response.data.students);
+        setAreaChartData(response.data.areaChartData || []);
       } else {
         toast.error("Erro ao carregar estudantes");
       }
@@ -85,20 +86,20 @@ export default function StudentsPage() {
   };
 
   const handleStudentAdded = () => {
-    fetchStudents();
+    setRefreshTrigger(prev => prev + 1);
     setShowAddDialog(false);
     toast.success("Estudante adicionado com sucesso!");
   };
 
   const handleStudentUpdated = () => {
-    fetchStudents();
+    setRefreshTrigger(prev => prev + 1);
     setShowEditDialog(false);
     setSelectedStudent(null);
     toast.success("Estudante atualizado com sucesso!");
   };
 
   const handleStudentDeleted = () => {
-    fetchStudents();
+    setRefreshTrigger(prev => prev + 1);
     setShowDeleteDialog(false);
     setSelectedStudent(null);
     toast.success("Estudante removido com sucesso!");
@@ -122,41 +123,36 @@ export default function StudentsPage() {
 
   return (
     <motion.div
-      className="mx-auto p-6 space-y-8"
+      className="mx-auto py-6 space-y-8"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
       {/* Header */}
       <motion.div
-        className="flex items-center justify-between"
-        initial={{ opacity: 0, y: -10 }}
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
+        className="w-full pb-6 border-b border-gray-200 dark:border-slate-700"
       >
-        <div className="flex items-center space-x-4">
-          <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white">
-            <Users className="h-6 w-6" />
-          </div>
+        <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-              Estudantes
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
+              Gerenciamento de Estudantes
             </h1>
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-slate-600 dark:text-slate-400">
               Gerencie os estudantes da sua organização
             </p>
           </div>
-        </div>
-
-        <div className="flex items-center space-x-3">
-          <Button variant="outline" className="gap-2">
-            <Download className="h-4 w-4" />
-            Exportar
-          </Button>
-          <Button onClick={handleAddStudent} className="gap-2">
-            <Plus className="h-4 w-4" />
-            Adicionar Estudante
-          </Button>
+          <div className="flex items-center space-x-3">
+            <Button
+              onClick={handleAddStudent}
+              size="sm"
+              className="border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Adicionar Estudante
+            </Button>
+          </div>
         </div>
       </motion.div>
 
@@ -174,26 +170,13 @@ export default function StudentsPage() {
         />
       </motion.div>
 
-      {/* Search and Filters */}
+      {/* Students Chart */}
       <motion.div
-        className="flex flex-col sm:flex-row gap-4"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
       >
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-          <Input
-            placeholder="Buscar por nome, email, Codigo de Estudante ou curso..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-        <Button variant="outline" className="gap-2">
-          <Filter className="h-4 w-4" />
-          Filtros
-        </Button>
+        <StudentsChart areaChartData={areaChartData} />
       </motion.div>
 
       {/* Students Table */}
@@ -202,29 +185,11 @@ export default function StudentsPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
       >
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Users className="h-5 w-5 text-blue-600" />
-                Estudantes ({filteredStudents.length})
-              </div>
-              <div className="text-sm text-gray-500">
-                {filteredStudents.length !== totalStudents &&
-                  `${filteredStudents.length} de ${totalStudents} estudantes`}
-              </div>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <StudentTable
-              students={filteredStudents}
-              loading={loading}
-              onRefresh={fetchStudents}
-              onEdit={handleEditStudent}
-              onDelete={handleDeleteStudent}
-            />
-          </CardContent>
-        </Card>
+        <StudentTable
+          refreshTrigger={refreshTrigger}
+          onEdit={handleEditStudent}
+          onDelete={handleDeleteStudent}
+        />
       </motion.div>
 
       {/* Dialogs */}

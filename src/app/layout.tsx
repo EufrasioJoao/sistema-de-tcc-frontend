@@ -49,7 +49,7 @@ export default async function RootLayout({
             </LanguageProvider>
           </AppProvider>
         </Providers>
-        {/* <PWAInstallPrompt /> */}
+        <PWAInstallPrompt />
       </body>
     </html>
   );

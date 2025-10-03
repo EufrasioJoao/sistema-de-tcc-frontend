@@ -1,17 +1,21 @@
 "use client";
 
 import * as React from "react";
+import { useState, useEffect } from "react";
+import { useDebounce } from "@/hooks/useDebounce";
+import { motion, AnimatePresence } from "framer-motion";
+import { api } from "@/lib/api";
 import {
   ColumnDef,
   ColumnFiltersState,
-  SortingState,
-  VisibilityState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  SortingState,
   useReactTable,
+  VisibilityState,
 } from "@tanstack/react-table";
 import {
   ArrowUpDown,
@@ -21,7 +25,6 @@ import {
   Filter,
   Eye,
   GraduationCap,
-  Mail,
   Users,
   FileText,
   Settings,
@@ -29,10 +32,13 @@ import {
   Trash2,
   UserCheck,
   UserX,
+  RefreshCw,
+  Loader2,
+  X,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -52,6 +58,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
 
 interface Course {
@@ -61,6 +69,7 @@ interface Course {
   createdAt: string;
   updatedAt: string;
   coordinator: {
+    id: string;
     first_name: string;
     last_name: string;
     email: string;
@@ -71,10 +80,24 @@ interface Course {
   };
 }
 
-interface Props {
-  courses: Course[];
-  loading: boolean;
-  onRefresh: () => void;
+interface PaginationData {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+}
+
+interface Filters {
+  search: string;
+  coordinator: string;
+  sortBy: string;
+  sortOrder: "asc" | "desc";
+}
+
+interface CourseTableProps {
+  refreshTrigger: number;
   onEdit: (course: Course) => void;
   onDelete: (course: Course) => void;
 }
@@ -110,29 +133,112 @@ const TableSkeleton = () => (
 );
 
 export function CourseTable({
-  courses,
-  loading,
-  onRefresh,
+  refreshTrigger,
   onEdit,
   onDelete,
-}: Props) {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
+}: CourseTableProps) {
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [pagination, setPagination] = useState<PaginationData>({
+    page: 1,
+    limit: 10,
+    total: 0,
+    totalPages: 0,
+    hasNextPage: false,
+    hasPreviousPage: false,
+  });
+  const [filters, setFilters] = useState<Filters>({
+    search: "",
+    coordinator: "",
+    sortBy: "createdAt",
+    sortOrder: "desc",
+  });
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = useState({});
   const router = useRouter();
 
+  const debouncedSearch = useDebounce(filters.search, 500);
+
+  // Fetch courses
+  const fetchCourses = async () => {
+    try {
+      setLoading(true);
+      const params = new URLSearchParams({
+        page: pagination.page.toString(),
+        limit: pagination.limit.toString(),
+        search: debouncedSearch,
+        sortBy: filters.sortBy,
+        sortOrder: filters.sortOrder,
+      });
+
+      if (filters.coordinator) {
+        params.append("coordinator", filters.coordinator);
+      }
+
+      const response = await api.get(`/api/courses?${params.toString()}`);
+
+      if (response.data.success) {
+        setCourses(response.data.courses);
+        setPagination(response.data.pagination);
+      }
+    } catch (error) {
+      console.error("Error fetching courses:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCourses();
+  }, [pagination.page, pagination.limit, debouncedSearch, filters.sortBy, filters.sortOrder, filters.coordinator, refreshTrigger]);
+
+  const handlePageChange = (newPage: number) => {
+    setPagination((prev) => ({ ...prev, page: newPage }));
+  };
+
+  const handleRefresh = () => {
+    fetchCourses();
+  };
+
   const columns: ColumnDef<Course>[] = [
+    {
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Selecionar todos"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Selecionar linha"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
     {
       accessorKey: "name",
       header: ({ column }) => {
         return (
           <Button
             variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            onClick={() => {
+              const isAsc = column.getIsSorted() === "asc";
+              setFilters((prev) => ({
+                ...prev,
+                sortBy: "name",
+                sortOrder: isAsc ? "desc" : "asc",
+              }));
+            }}
             className="h-auto p-0 font-semibold text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
           >
             <GraduationCap className="mr-2 h-4 w-4" />
@@ -143,9 +249,6 @@ export function CourseTable({
       },
       cell: ({ row }) => (
         <div className="flex items-center space-x-3 py-2">
-          <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-            {row.getValue("name")?.toString().charAt(0).toUpperCase()}
-          </div>
           <div className="flex flex-col">
             <span className="font-medium text-gray-900 dark:text-gray-100">
               {row.getValue("name")}
@@ -206,7 +309,14 @@ export function CourseTable({
         return (
           <Button
             variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            onClick={() => {
+              const isAsc = filters.sortBy === "students" && filters.sortOrder === "asc";
+              setFilters((prev) => ({
+                ...prev,
+                sortBy: "students",
+                sortOrder: isAsc ? "desc" : "asc",
+              }));
+            }}
             className="h-auto p-0 font-semibold text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400"
           >
             <Users className="mr-2 h-4 w-4" />
@@ -217,14 +327,10 @@ export function CourseTable({
       },
       cell: ({ row }) => (
         <div className="flex items-center justify-center py-2">
-          <motion.span
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200 dark:from-green-900/30 dark:to-emerald-900/30 dark:text-green-300 dark:border-green-700"
-          >
+          <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
             <Users className="w-3 h-3 mr-1.5" />
             {row.original._count.students}
-          </motion.span>
+          </Badge>
         </div>
       ),
     },
@@ -234,7 +340,14 @@ export function CourseTable({
         return (
           <Button
             variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            onClick={() => {
+              const isAsc = filters.sortBy === "tccs" && filters.sortOrder === "asc";
+              setFilters((prev) => ({
+                ...prev,
+                sortBy: "tccs",
+                sortOrder: isAsc ? "desc" : "asc",
+              }));
+            }}
             className="h-auto p-0 font-semibold text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400"
           >
             <FileText className="mr-2 h-4 w-4" />
@@ -245,14 +358,10 @@ export function CourseTable({
       },
       cell: ({ row }) => (
         <div className="flex items-center justify-center py-2">
-          <motion.span
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold bg-gradient-to-r from-purple-100 to-violet-100 text-purple-800 border border-purple-200 dark:from-purple-900/30 dark:to-violet-900/30 dark:text-purple-300 dark:border-purple-700"
-          >
+          <Badge variant="secondary" className="bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
             <FileText className="w-3 h-3 mr-1.5" />
             {row.original._count.tccs}
-          </motion.span>
+          </Badge>
         </div>
       ),
     },
@@ -356,31 +465,7 @@ export function CourseTable({
   });
 
   if (loading) {
-    return (
-      <motion.div
-        className="w-full"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <Skeleton className="h-10 w-10 rounded-lg" />
-              <div>
-                <Skeleton className="h-5 w-48 mb-2" />
-                <Skeleton className="h-4 w-32" />
-              </div>
-            </div>
-            <div className="flex items-center space-x-3">
-              <Skeleton className="h-10 w-64" />
-              <Skeleton className="h-10 w-32" />
-            </div>
-          </div>
-        </div>
-        <TableSkeleton />
-      </motion.div>
-    );
+    return <TableSkeleton />;
   }
 
   return (
@@ -412,20 +497,69 @@ export function CourseTable({
             </div>
           </div>
 
-          <div className="flex items-center space-x-3 w-full sm:w-auto">
+          <div className="flex items-center space-x-3 w-full sm:w-auto flex-wrap gap-4">
             <div className="relative flex-1 sm:flex-none">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
                 placeholder="Buscar por nome do curso..."
-                value={
-                  (table.getColumn("name")?.getFilterValue() as string) ?? ""
-                }
+                value={filters.search}
                 onChange={(event) =>
-                  table.getColumn("name")?.setFilterValue(event.target.value)
+                  setFilters((prev) => ({ ...prev, search: event.target.value }))
                 }
                 className="pl-10 w-full sm:w-64 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
+              {filters.search && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0"
+                  onClick={() => setFilters((prev) => ({ ...prev, search: "" }))}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
             </div>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                >
+                  <Filter className="mr-2 h-4 w-4" />
+                  Filtros
+                  <ChevronDown className="ml-2 h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuLabel>Coordenador</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => setFilters((prev) => ({ ...prev, coordinator: "" }))}
+                >
+                  Todos
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => setFilters((prev) => ({ ...prev, coordinator: "with" }))}
+                >
+                  Com coordenador
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => setFilters((prev) => ({ ...prev, coordinator: "without" }))}
+                >
+                  Sem coordenador
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRefresh}
+              className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
+            >
+              <RefreshCw className="h-4 w-4" />
+            </Button>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -493,9 +627,9 @@ export function CourseTable({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
                   );
                 })}
@@ -565,19 +699,18 @@ export function CourseTable({
       >
         <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
           <span>
-            Página {table.getState().pagination.pageIndex + 1} de{" "}
-            {table.getPageCount()}
+            Página {pagination.page} de {pagination.totalPages}
           </span>
           <span className="text-gray-400">•</span>
-          <span>{table.getFilteredRowModel().rows.length} total</span>
+          <span>{pagination.total} total</span>
         </div>
 
         <div className="flex items-center space-x-2">
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
+            onClick={() => handlePageChange(pagination.page - 1)}
+            disabled={!pagination.hasPreviousPage}
             className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
           >
             Anterior
@@ -585,8 +718,8 @@ export function CourseTable({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
+            onClick={() => handlePageChange(pagination.page + 1)}
+            disabled={!pagination.hasNextPage}
             className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
           >
             Próximo
