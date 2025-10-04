@@ -54,10 +54,14 @@ export default function TCCsPage() {
       keywords: searchResult.keywords,
       type: searchResult.type,
       authorId: searchResult.authorId || searchResult.author?.id || "",
-      supervisorId: searchResult.supervisorId || searchResult.supervisor?.id || "",
+      supervisorId:
+        searchResult.supervisorId || searchResult.supervisor?.id || "",
       courseId: searchResult.courseId || searchResult.course?.id || "",
       fileId: searchResult.fileId || searchResult.file?.id || null,
-      defenseRecordFileId: searchResult.defenseRecordFileId || searchResult.defenseRecordFile?.id || null,
+      defenseRecordFileId:
+        searchResult.defenseRecordFileId ||
+        searchResult.defenseRecordFile?.id ||
+        null,
       createdAt: searchResult.createdAt || new Date().toISOString(),
       updatedAt: searchResult.updatedAt || new Date().toISOString(),
       deletedAt: searchResult.deletedAt || null,
@@ -141,7 +145,7 @@ export default function TCCsPage() {
               onClick={() => setSearchDialogOpen(true)}
               variant="outline"
               size="sm"
-              className="border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"
+              className="border-slate-200 dark:border-slate-700   dark:hover:bg-slate-800"
             >
               <Search className="mr-2 h-4 w-4" />
               Busca Inteligente
@@ -150,7 +154,7 @@ export default function TCCsPage() {
               <Button
                 onClick={handleAddTCC}
                 size="sm"
-                className="border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"
+                className="border-slate-200 dark:border-slate-700   dark:hover:bg-slate-800"
               >
                 <Plus className="mr-2 h-4 w-4" />
                 Adicionar TCC

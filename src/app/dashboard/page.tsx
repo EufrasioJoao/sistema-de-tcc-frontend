@@ -199,7 +199,7 @@ export default function DashboardPage() {
               onClick={getDashboardData}
               variant="outline"
               size="sm"
-              className="border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"
+              className="border-slate-200 dark:border-slate-700   dark:hover:bg-slate-800"
             >
               <RefreshCw className="mr-2 h-4 w-4" />
               Atualizar
@@ -410,12 +410,13 @@ export default function DashboardPage() {
                             {type.label}
                           </span>
                           <Badge
-                            className={`shadow-lg px-4 py-2 text-lg text-white ${type.type === "BACHELOR"
+                            className={`shadow-lg px-4 py-2 text-lg text-white ${
+                              type.type === "BACHELOR"
                                 ? "bg-gradient-to-r from-blue-500 to-blue-600"
                                 : type.type === "MASTER"
-                                  ? "bg-gradient-to-r from-purple-500 to-purple-600"
-                                  : "bg-gradient-to-r from-orange-500 to-orange-600"
-                              }`}
+                                ? "bg-gradient-to-r from-purple-500 to-purple-600"
+                                : "bg-gradient-to-r from-orange-500 to-orange-600"
+                            }`}
                           >
                             {type.count}
                           </Badge>

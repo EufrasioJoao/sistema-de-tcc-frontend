@@ -3,13 +3,7 @@
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import { motion } from "framer-motion";
-import {
-  Users,
-  Plus,
-  Search,
-  Filter,
-  Download,
-} from "lucide-react";
+import { Users, Plus, Search, Filter, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -40,7 +34,9 @@ interface Student {
 
 export default function StudentsPage() {
   const [students, setStudents] = useState<Student[]>([]);
-  const [areaChartData, setAreaChartData] = useState<Array<{ date: string; students: number }>>([]);
+  const [areaChartData, setAreaChartData] = useState<
+    Array<{ date: string; students: number }>
+  >([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddDialog, setShowAddDialog] = useState(false);
@@ -86,20 +82,20 @@ export default function StudentsPage() {
   };
 
   const handleStudentAdded = () => {
-    setRefreshTrigger(prev => prev + 1);
+    setRefreshTrigger((prev) => prev + 1);
     setShowAddDialog(false);
     toast.success("Estudante adicionado com sucesso!");
   };
 
   const handleStudentUpdated = () => {
-    setRefreshTrigger(prev => prev + 1);
+    setRefreshTrigger((prev) => prev + 1);
     setShowEditDialog(false);
     setSelectedStudent(null);
     toast.success("Estudante atualizado com sucesso!");
   };
 
   const handleStudentDeleted = () => {
-    setRefreshTrigger(prev => prev + 1);
+    setRefreshTrigger((prev) => prev + 1);
     setShowDeleteDialog(false);
     setSelectedStudent(null);
     toast.success("Estudante removido com sucesso!");
@@ -147,7 +143,7 @@ export default function StudentsPage() {
             <Button
               onClick={handleAddStudent}
               size="sm"
-              className="border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"
+              className="border-slate-200 dark:border-slate-700   dark:hover:bg-slate-800"
             >
               <Plus className="mr-2 h-4 w-4" />
               Adicionar Estudante

@@ -115,7 +115,7 @@ export default function UsersPage() {
                 <Button
                   onClick={() => setIsDialogOpened(true)}
                   size="sm"
-                  className="border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"
+                  className="border-slate-200 dark:border-slate-700   dark:hover:bg-slate-800"
                 >
                   <Plus className="mr-2 h-4 w-4" />
                   Adicionar Usuário
@@ -135,7 +135,9 @@ export default function UsersPage() {
             router={router}
             users={users}
             pagination={pagination}
-            onPageChange={(page) => getUsers(page, searchTerm, roleFilter, statusFilter)}
+            onPageChange={(page) =>
+              getUsers(page, searchTerm, roleFilter, statusFilter)
+            }
             searchTerm={searchTerm}
             onSearchChange={setSearchTerm}
             roleFilter={roleFilter}

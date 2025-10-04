@@ -75,7 +75,7 @@ export default function CoursesPage() {
           <Button
             onClick={() => setDialogOpen(true)}
             size="sm"
-            className="border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"
+            className="border-slate-200 dark:border-slate-700   dark:hover:bg-slate-800"
           >
             <Plus className="mr-2 h-4 w-4" />
             Adicionar Curso
