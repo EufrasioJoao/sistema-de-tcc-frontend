@@ -16,7 +16,6 @@ export enum AccessHistoryAction {
   VIEW_FILE = "VIEW_FILE",
   DOWNLOAD_FILE = "DOWNLOAD_FILE",
   EDIT_FILE = "EDIT_FILE",
-  MOVE_FILE = "MOVE_FILE",
   UPLOAD_FILE = "UPLOAD_FILE",
 }
 
@@ -103,7 +102,7 @@ export interface File {
   uploader?: User;
   tcc?: TCC | null;
   defenseRecordForTcc?: TCC | null;
-   // custom fields for UI
+  // custom fields for UI
   accessLevel?: PermissionAccessLevel;
 }
 
@@ -168,3 +167,16 @@ export interface TCC {
 
 // --- Custom Interfaces for UI --- 
 
+export interface Backup {
+  id: string;
+  filename: string;
+  s3_key: string;
+  s3_url?: string | null;
+  file_size?: number | null;
+  status: "PENDING" | "IN_PROGRESS" | "COMPLETED" | "FAILED";
+  error_message?: string | null;
+  started_at: Date | string;
+  completed_at?: Date | string | null;
+  created_at: Date | string;
+  updated_at: Date | string;
+}

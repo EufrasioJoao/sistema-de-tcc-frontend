@@ -7,8 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { UserRoles } from "@/types/index";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -19,12 +18,21 @@ import {
   User,
   Shield,
   Building,
-  Briefcase,
-  History,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Skeleton } from "@/components/ui/skeleton";
 import { UserAuditLogs } from "./_components/UserAuditLogs";
+import { DeleteUserDialog } from "./_components/DeleteUserDialog";
+import { EditUserDialog } from "./_components/EditUserDialog";
+import { Button } from "@/components/ui/button";
+import { Trash2, MoreVertical, Edit } from "lucide-react";
+import { useUserData } from "@/contexts/app-context";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 // Define User type based on prisma schema
 interface User {
@@ -38,7 +46,7 @@ interface User {
   last_login_at: string | null;
   created_at: string;
   updated_at: string;
-  organization: {
+  organization?: {
     name: string;
   };
 }
@@ -84,6 +92,9 @@ const UserProfilePage = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const { user: currentUser } = useUserData();
 
   useEffect(() => {
     if (id) {
@@ -122,6 +133,28 @@ const UserProfilePage = () => {
   const fullName = `${user.first_name} ${user.last_name}`;
   const initials = `${user.first_name[0]}${user.last_name[0]}`;
 
+  // Check if current user can delete this user
+  // Rules:
+  // - ADMIN can delete all except their own account
+  // - SISTEM_MANAGER can delete all except ADMINs and their own account
+  const canDeleteUser = currentUser && currentUser.id !== user.id && (
+    (currentUser.role === UserRoles.ADMIN) ||
+    (currentUser.role === UserRoles.SISTEM_MANAGER)
+  );
+
+  // Check if current user can edit this user
+  // Rules:
+  // - Users can edit their own profile
+  // - ADMINs can edit any user
+  const canEditUser = currentUser && (
+    currentUser.id === user.id ||
+    currentUser.role === UserRoles.ADMIN
+  );
+
+  const handleUserUpdate = (updatedUser: any) => {
+    setUser(updatedUser);
+  };
+
   return (
     <motion.div
       className="mx-auto p-4 md:p-6 lg:p-8"
@@ -138,7 +171,35 @@ const UserProfilePage = () => {
           transition={{ delay: 0.2 }}
         >
           <Card className="overflow-hidden">
-            <CardHeader className="bg-muted/40 p-6 items-center text-center">
+            <CardHeader className="bg-muted/40 p-6 items-center text-center relative">
+              {(canEditUser || canDeleteUser) && (
+                <div className="absolute top-4 right-4">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      {canEditUser && (
+                        <DropdownMenuItem onClick={() => setEditDialogOpen(true)}>
+                          <Edit className="mr-2 h-4 w-4" />
+                          Editar Usuário
+                        </DropdownMenuItem>
+                      )}
+                      {canDeleteUser && (
+                        <DropdownMenuItem
+                          onClick={() => setDeleteDialogOpen(true)}
+                          className="text-red-600 focus:text-red-600"
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Excluir Usuário
+                        </DropdownMenuItem>
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              )}
               <Avatar className="w-24 h-24 mb-4 border-4 border-background">
                 <AvatarImage
                   src={`https://avatar.vercel.sh/${user.email}.png`}
@@ -173,7 +234,7 @@ const UserProfilePage = () => {
               <InfoRow
                 icon={<Building size={16} />}
                 label="Organização"
-                value={user.organization.name}
+                value={user.organization?.name || "Não informado"}
               />
             </CardContent>
           </Card>
@@ -226,6 +287,21 @@ const UserProfilePage = () => {
           </Tabs>
         </motion.div>
       </div>
+
+      {/* Edit User Dialog */}
+      <EditUserDialog
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        user={user}
+        onSuccess={handleUserUpdate}
+      />
+
+      {/* Delete User Dialog */}
+      <DeleteUserDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        user={user}
+      />
     </motion.div>
   );
 };

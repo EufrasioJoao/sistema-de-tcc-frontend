@@ -21,6 +21,7 @@ import {
   FileText,
   UserCog,
   Shield,
+  Database,
 } from "lucide-react";
 import {
   Sidebar as ShadcnSidebar,
@@ -87,7 +88,9 @@ const Sidebar = () => {
       name: "courses",
       url: "/dashboard/courses",
       icon: BookCopy,
-      roles: [UserRoles.ADMIN, UserRoles.SISTEM_MANAGER],
+      roles: [UserRoles.ADMIN, UserRoles.SISTEM_MANAGER,
+      UserRoles.COURSE_COORDENATOR,
+      UserRoles.ACADEMIC_REGISTER,],
     },
     {
       title: "Estudantes",
@@ -105,20 +108,32 @@ const Sidebar = () => {
       name: "users",
       url: "/dashboard/users",
       icon: UserCog,
-      roles: [UserRoles.ADMIN],
+      roles: [UserRoles.ADMIN,
+      UserRoles.SISTEM_MANAGER,],
     },
     {
       title: "Relatórios",
       name: "reports",
       url: "/dashboard/reports",
       icon: AreaChart,
-      roles: [UserRoles.ADMIN, UserRoles.SISTEM_MANAGER],
+      roles: [
+        UserRoles.ADMIN,
+        UserRoles.SISTEM_MANAGER,
+        UserRoles.COURSE_COORDENATOR,
+        UserRoles.ACADEMIC_REGISTER,],
     },
     {
       title: "Auditoria",
       name: "audit",
       url: "/dashboard/audit",
       icon: Shield,
+      roles: [UserRoles.ADMIN, UserRoles.SISTEM_MANAGER],
+    },
+    {
+      title: "Backup",
+      name: "backup",
+      url: "/dashboard/backup",
+      icon: Database,
       roles: [UserRoles.ADMIN, UserRoles.SISTEM_MANAGER],
     },
     {
@@ -190,17 +205,15 @@ const Sidebar = () => {
                     )}
                     <SidebarMenuButton
                       asChild
-                      className={`rounded-lg mb-1 font-medium transition-colors ${
-                        isActive
-                          ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                          : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                      }`}
+                      className={`rounded-lg mb-1 font-medium transition-colors ${isActive
+                        ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                        : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                        }`}
                     >
                       <Link
                         href={item.url}
-                        className={`flex items-center gap-3 p-3 ${
-                          !isExpanded ? "justify-center" : ""
-                        }`}
+                        className={`flex items-center gap-3 p-3 ${!isExpanded ? "justify-center" : ""
+                          }`}
                       >
                         <item.icon className="flex-shrink-0" />
                         {isExpanded && (
@@ -278,7 +291,7 @@ const Sidebar = () => {
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => router.push("/auth/logout")}>
-                  <LogOut className="mr-2 h-4 w-4" />
+                  <LogOut className="mrg-2 h-4 w-4" />
                   <span>Sair</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>

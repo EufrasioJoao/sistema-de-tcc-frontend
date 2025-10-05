@@ -4,9 +4,9 @@ export default function SignInPage() {
   return (
     <div className="grid h-screen w-full grid-cols-1 lg:grid-cols-2">
       <div
-        className="relative bg-cover bg-center lg:block"
+        className="relative bg-cover bg-center hidden lg:block"
         style={{
-          backgroundImage: "url(/images/auth/signin/bg.avif)",
+          backgroundImage: "url(/images/auth/signin/bg.jpg)",
         }}
       >
         <div className="relative z-10 flex h-full flex-col justify-end bg-black/50 p-10 text-white">
@@ -16,6 +16,7 @@ export default function SignInPage() {
           </p>
         </div>
       </div>
+
       <div className="relative flex items-center justify-center p-4">
         <div className="w-full max-w-md">
           <div className="mb-8 text-center">

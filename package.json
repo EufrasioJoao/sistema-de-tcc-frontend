@@ -60,6 +60,7 @@
     "react-dom": "^19.1.1",
     "react-dropzone": "^14.3.5",
     "react-hook-form": "^7.62.0",
+    "react-pdf": "^10.1.0",
     "react-resizable-panels": "^2.1.9",
     "react-spinners": "^0.15.0",
     "recharts": "^2.15.4",
