@@ -117,15 +117,14 @@ export function KeywordReports({ data }: KeywordReportsProps) {
                                         height={80}
                                         fontSize={12}
                                     />
-                                    <YAxis />
-                                    <Tooltip />
-                                    <Bar dataKey="count" fill="#3b82f6" />
+                                    <YAxis label={{ value: 'Quantidade', angle: -90, position: 'insideLeft' }} />
+                                    <Tooltip formatter={(value) => [`${value} usos`, 'Quantidade']} />
+                                    <Bar dataKey="count" fill="#3b82f6" name="Quantidade" />
                                 </BarChart>
                             </ResponsiveContainer>
                         </CardContent>
                     </Card>
                 </motion.div>
-
                 {/* Palavras-chave por Ano */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}

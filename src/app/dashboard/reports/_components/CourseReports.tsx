@@ -110,9 +110,9 @@ export function CourseReports({ data }: CourseReportsProps) {
                                         height={80}
                                         fontSize={12}
                                     />
-                                    <YAxis />
-                                    <Tooltip />
-                                    <Bar dataKey="tccCount" fill="#3b82f6" />
+                                    <YAxis label={{ value: 'Quantidade', angle: -90, position: 'insideLeft' }} />
+                                    <Tooltip formatter={(value) => [`${value} TCCs`, 'Quantidade']} />
+                                    <Bar dataKey="tccCount" fill="#3b82f6" name="Quantidade" />
                                 </BarChart>
                             </ResponsiveContainer>
                         </CardContent>
@@ -146,7 +146,7 @@ export function CourseReports({ data }: CourseReportsProps) {
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                         ))}
                                     </Pie>
-                                    <Tooltip />
+                                    <Tooltip formatter={(value) => `${value} estudantes`} />
                                 </PieChart>
                             </ResponsiveContainer>
                         </CardContent>
@@ -174,9 +174,9 @@ export function CourseReports({ data }: CourseReportsProps) {
                                         height={80}
                                         fontSize={12}
                                     />
-                                    <YAxis />
-                                    <Tooltip />
-                                    <Bar dataKey="supervisor_count" fill="#10b981" />
+                                    <YAxis label={{ value: 'Quantidade', angle: -90, position: 'insideLeft' }} />
+                                    <Tooltip formatter={(value) => [`${value} orientadores`, 'Quantidade']} />
+                                    <Bar dataKey="supervisor_count" fill="#10b981" name="Quantidade" />
                                 </BarChart>
                             </ResponsiveContainer>
                         </CardContent>
@@ -198,9 +198,9 @@ export function CourseReports({ data }: CourseReportsProps) {
                                 <BarChart data={data?.byYear}>
                                     <CartesianGrid strokeDasharray="3 3" />
                                     <XAxis dataKey="year" />
-                                    <YAxis />
-                                    <Tooltip />
-                                    <Bar dataKey="count" fill="#f59e0b" />
+                                    <YAxis label={{ value: 'Quantidade', angle: -90, position: 'insideLeft' }} />
+                                    <Tooltip formatter={(value) => [`${value} cursos`, 'Quantidade']} />
+                                    <Bar dataKey="count" fill="#f59e0b" name="Quantidade" />
                                 </BarChart>
                             </ResponsiveContainer>
                         </CardContent>

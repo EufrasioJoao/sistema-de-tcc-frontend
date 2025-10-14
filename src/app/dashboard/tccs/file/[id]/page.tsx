@@ -41,21 +41,25 @@ export default function FilePage({
     try {
       const urlParams = new URLSearchParams(window.location.search);
       const name = urlParams.get("name") as string;
+      const tccIdParam = urlParams.get("tccId") as string;
+      const fileTypeParam = urlParams.get("fileType") as string || "main";
+      
       setFileName(name);
-
+      setTccId(tccIdParam);
+      setFileType(fileTypeParam);
 
       const sessionData = await getSessionData();
       const token = sessionData?.data?.token || '';
       setAuthToken(token);
 
-      // Construir a URL do stream usando o baseURL da API
+      // Construir a URL do stream usando o baseURL da API (para visualização)
       const streamUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/tccs/stream/${fileId}`;
       setFileUrl(streamUrl);
     } catch (error) {
-      console.error("Error downloading the file:", error);
+      console.error("Error loading the file:", error);
       if (error instanceof AxiosError) {
         toast.error(
-          error?.response?.data?.message || "Ocorreu um erro ao fazer download!"
+          error?.response?.data?.message || "Ocorreu um erro ao carregar o arquivo!"
         );
       }
     } finally {
@@ -80,11 +84,14 @@ export default function FilePage({
   };
 
   const handleDownload = async () => {
-    if (!fileUrl || !authToken || downloading) return;
+    if (!tccId || !fileType || !authToken || downloading) return;
 
     setDownloading(true);
     try {
-      const response = await fetch(fileUrl, {
+      // Use the download endpoint that logs the download and streams the file
+      const downloadEndpoint = `${process.env.NEXT_PUBLIC_API_URL}/api/tccs/${tccId}/download/${fileType}`;
+      
+      const response = await fetch(downloadEndpoint, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${authToken}`,
@@ -95,11 +102,22 @@ export default function FilePage({
         throw new Error('Erro ao fazer download do arquivo');
       }
 
+      // Get the filename from Content-Disposition header if available
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let downloadFileName = fileName;
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename="?(.+)"?/i);
+        if (filenameMatch) {
+          downloadFileName = filenameMatch[1];
+        }
+      }
+
+      // Get the blob from the response
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = fileName;
+      link.download = downloadFileName;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

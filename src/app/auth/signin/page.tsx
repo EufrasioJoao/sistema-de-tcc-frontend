@@ -21,7 +21,7 @@ export default function SignInPage() {
         <div className="w-full max-w-md">
           <div className="mb-8 text-center">
             <h1 className="text-4xl font-bold text-primary">
-              Accesse sua conta
+              Acesse sua conta
             </h1>
             <p className="text-muted-foreground">
               Gestão de documentos e processos de TCC de forma eficiente.

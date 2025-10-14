@@ -214,20 +214,6 @@ export default function CourseDetailsPage() {
             </div>
           </div>
         </div>
-
-        <div className="flex items-center space-x-3">
-          <Button variant="outline" className="gap-2">
-            <Edit className="h-4 w-4" />
-            Editar
-          </Button>
-          <Button
-            variant="outline"
-            className="gap-2 text-red-600 hover:text-red-700"
-          >
-            <Trash2 className="h-4 w-4" />
-            Excluir
-          </Button>
-        </div>
       </motion.div>
 
       {/* Course Info Card */}
@@ -354,7 +340,7 @@ export default function CourseDetailsPage() {
                 {Math.floor(
                   (new Date().getTime() -
                     new Date(course.createdAt).getTime()) /
-                  (1000 * 60 * 60 * 24)
+                    (1000 * 60 * 60 * 24)
                 )}{" "}
                 dias
               </Badge>
@@ -386,7 +372,9 @@ export default function CourseDetailsPage() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Nome</TableHead>
-                      <TableHead className="truncate">Codigo de Estudante</TableHead>
+                      <TableHead className="truncate">
+                        Codigo de Estudante
+                      </TableHead>
                       <TableHead className="w-12"></TableHead>
                     </TableRow>
                   </TableHeader>

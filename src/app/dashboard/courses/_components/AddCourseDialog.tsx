@@ -55,16 +55,9 @@ export function AddCourseDialog({ open, onOpenChange, onSuccess }: Props) {
   const fetchCoordinators = async () => {
     try {
       setLoadingCoordinators(true);
-      const response = await api.get("/api/users");
+      const response = await api.get("/api/users/coordinators");
       if (response.data.success) {
-        // Filter users who can be coordinators
-        const potentialCoordinators = response.data.users.filter(
-          (user: User) =>
-            user.role === "COURSE_COORDENATOR" ||
-            user.role === "ADMIN" ||
-            user.role === "SISTEM_MANAGER"
-        );
-        setCoordinators(potentialCoordinators);
+        setCoordinators(response.data.coordinators);
       }
     } catch (error) {
       toast.error("Erro ao carregar coordenadores");

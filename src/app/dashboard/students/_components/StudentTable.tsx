@@ -189,7 +189,15 @@ export function StudentTable({
 
   useEffect(() => {
     fetchStudents();
-  }, [pagination.page, pagination.limit, debouncedSearch, filters.sortBy, filters.sortOrder, filters.course, refreshTrigger]);
+  }, [
+    pagination.page,
+    pagination.limit,
+    debouncedSearch,
+    filters.sortBy,
+    filters.sortOrder,
+    filters.course,
+    refreshTrigger,
+  ]);
 
   const handlePageChange = (newPage: number) => {
     setPagination((prev) => ({ ...prev, page: newPage }));
@@ -201,35 +209,14 @@ export function StudentTable({
 
   const columns: ColumnDef<Student>[] = [
     {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Selecionar todos"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Selecionar linha"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
-    {
       accessorKey: "firstName",
       header: ({ column }) => {
         return (
           <Button
             variant="ghost"
             onClick={() => {
-              const isAsc = filters.sortBy === "firstName" && filters.sortOrder === "asc";
+              const isAsc =
+                filters.sortBy === "firstName" && filters.sortOrder === "asc";
               setFilters((prev) => ({
                 ...prev,
                 sortBy: "firstName",
@@ -272,7 +259,9 @@ export function StudentTable({
           <Button
             variant="ghost"
             onClick={() => {
-              const isAsc = filters.sortBy === "studentNumber" && filters.sortOrder === "asc";
+              const isAsc =
+                filters.sortBy === "studentNumber" &&
+                filters.sortOrder === "asc";
               setFilters((prev) => ({
                 ...prev,
                 sortBy: "studentNumber",
@@ -301,7 +290,8 @@ export function StudentTable({
           <Button
             variant="ghost"
             onClick={() => {
-              const isAsc = filters.sortBy === "course" && filters.sortOrder === "asc";
+              const isAsc =
+                filters.sortBy === "course" && filters.sortOrder === "asc";
               setFilters((prev) => ({
                 ...prev,
                 sortBy: "course",
@@ -338,7 +328,8 @@ export function StudentTable({
           <Button
             variant="ghost"
             onClick={() => {
-              const isAsc = filters.sortBy === "tccs" && filters.sortOrder === "asc";
+              const isAsc =
+                filters.sortBy === "tccs" && filters.sortOrder === "asc";
               setFilters((prev) => ({
                 ...prev,
                 sortBy: "tccs",
@@ -501,7 +492,10 @@ export function StudentTable({
                 placeholder="Buscar por nome, email ou código..."
                 value={filters.search}
                 onChange={(event) =>
-                  setFilters((prev) => ({ ...prev, search: event.target.value }))
+                  setFilters((prev) => ({
+                    ...prev,
+                    search: event.target.value,
+                  }))
                 }
                 className="pl-10 w-full sm:w-64 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
@@ -510,7 +504,9 @@ export function StudentTable({
                   variant="ghost"
                   size="sm"
                   className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0"
-                  onClick={() => setFilters((prev) => ({ ...prev, search: "" }))}
+                  onClick={() =>
+                    setFilters((prev) => ({ ...prev, search: "" }))
+                  }
                 >
                   <X className="h-4 w-4" />
                 </Button>
@@ -532,7 +528,9 @@ export function StudentTable({
                 <DropdownMenuLabel>Curso</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
-                  onClick={() => setFilters((prev) => ({ ...prev, course: "" }))}
+                  onClick={() =>
+                    setFilters((prev) => ({ ...prev, course: "" }))
+                  }
                 >
                   Todos os cursos
                 </DropdownMenuItem>
@@ -614,9 +612,9 @@ export function StudentTable({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                     </TableHead>
                   );
                 })}

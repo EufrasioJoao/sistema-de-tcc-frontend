@@ -43,7 +43,7 @@ const formSchema = z.object({
     required_error: "Tipo é obrigatório",
   }),
   authorId: z.string().min(1, "Autor é obrigatório"),
-  supervisorId: z.string().min(1, "Supervisor é obrigatório"),
+  supervisor: z.string().optional(),
   courseId: z.string().min(1, "Curso é obrigatório"),
 });
 
@@ -68,12 +68,6 @@ interface Student {
   };
 }
 
-interface Supervisor {
-  id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-}
 
 interface Course {
   id: string;
@@ -88,7 +82,6 @@ export function EditTCCDialog({
 }: EditTCCDialogProps) {
   const [loading, setLoading] = useState(false);
   const [students, setStudents] = useState<Student[]>([]);
-  const [supervisors, setSupervisors] = useState<Supervisor[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
   const [selectedDefenseFile, setSelectedDefenseFile] = useState<File | null>(
     null
@@ -103,7 +96,7 @@ export function EditTCCDialog({
       keywords: "",
       type: "BACHELOR",
       authorId: "",
-      supervisorId: "",
+      supervisor: "",
       courseId: "",
     },
   });
@@ -116,7 +109,7 @@ export function EditTCCDialog({
         keywords: tcc.keywords || "",
         type: tcc.type,
         authorId: tcc?.author?.id,
-        supervisorId: tcc?.supervisor?.id,
+        supervisor: tcc?.supervisor || "",
         courseId: tcc?.course?.id,
       });
       fetchData();
@@ -125,18 +118,13 @@ export function EditTCCDialog({
 
   const fetchData = async () => {
     try {
-      const [studentsRes, supervisorsRes, coursesRes] = await Promise.all([
+      const [studentsRes, coursesRes] = await Promise.all([
         api.get("/api/students"),
-        api.get("/api/users"),
         api.get("/api/courses"),
       ]);
 
       if (studentsRes.data.success) {
         setStudents(studentsRes.data.students);
-      }
-
-      if (supervisorsRes.data.success) {
-        setSupervisors(supervisorsRes.data.users);
       }
 
       if (coursesRes.data.success) {
@@ -352,24 +340,16 @@ export function EditTCCDialog({
 
               <FormField
                 control={form.control}
-                name="supervisorId"
+                name="supervisor"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Supervisor</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione o supervisor" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {supervisors.map((supervisor) => (
-                          <SelectItem key={supervisor.id} value={supervisor.id}>
-                            {supervisor.first_name} {supervisor.last_name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <FormControl>
+                      <Input
+                        placeholder="Nome do supervisor"
+                        {...field}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}

@@ -192,7 +192,15 @@ export function CourseTable({
 
   useEffect(() => {
     fetchCourses();
-  }, [pagination.page, pagination.limit, debouncedSearch, filters.sortBy, filters.sortOrder, filters.coordinator, refreshTrigger]);
+  }, [
+    pagination.page,
+    pagination.limit,
+    debouncedSearch,
+    filters.sortBy,
+    filters.sortOrder,
+    filters.coordinator,
+    refreshTrigger,
+  ]);
 
   const handlePageChange = (newPage: number) => {
     setPagination((prev) => ({ ...prev, page: newPage }));
@@ -203,28 +211,6 @@ export function CourseTable({
   };
 
   const columns: ColumnDef<Course>[] = [
-    {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Selecionar todos"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Selecionar linha"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
     {
       accessorKey: "name",
       header: ({ column }) => {
@@ -310,7 +296,8 @@ export function CourseTable({
           <Button
             variant="ghost"
             onClick={() => {
-              const isAsc = filters.sortBy === "students" && filters.sortOrder === "asc";
+              const isAsc =
+                filters.sortBy === "students" && filters.sortOrder === "asc";
               setFilters((prev) => ({
                 ...prev,
                 sortBy: "students",
@@ -327,7 +314,10 @@ export function CourseTable({
       },
       cell: ({ row }) => (
         <div className="flex items-center justify-center py-2">
-          <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
+          <Badge
+            variant="secondary"
+            className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
+          >
             <Users className="w-3 h-3 mr-1.5" />
             {row.original._count.students}
           </Badge>
@@ -341,7 +331,8 @@ export function CourseTable({
           <Button
             variant="ghost"
             onClick={() => {
-              const isAsc = filters.sortBy === "tccs" && filters.sortOrder === "asc";
+              const isAsc =
+                filters.sortBy === "tccs" && filters.sortOrder === "asc";
               setFilters((prev) => ({
                 ...prev,
                 sortBy: "tccs",
@@ -358,7 +349,10 @@ export function CourseTable({
       },
       cell: ({ row }) => (
         <div className="flex items-center justify-center py-2">
-          <Badge variant="secondary" className="bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
+          <Badge
+            variant="secondary"
+            className="bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300"
+          >
             <FileText className="w-3 h-3 mr-1.5" />
             {row.original._count.tccs}
           </Badge>
@@ -504,7 +498,10 @@ export function CourseTable({
                 placeholder="Buscar por nome do curso..."
                 value={filters.search}
                 onChange={(event) =>
-                  setFilters((prev) => ({ ...prev, search: event.target.value }))
+                  setFilters((prev) => ({
+                    ...prev,
+                    search: event.target.value,
+                  }))
                 }
                 className="pl-10 w-full sm:w-64 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
@@ -513,7 +510,9 @@ export function CourseTable({
                   variant="ghost"
                   size="sm"
                   className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0"
-                  onClick={() => setFilters((prev) => ({ ...prev, search: "" }))}
+                  onClick={() =>
+                    setFilters((prev) => ({ ...prev, search: "" }))
+                  }
                 >
                   <X className="h-4 w-4" />
                 </Button>
@@ -535,17 +534,23 @@ export function CourseTable({
                 <DropdownMenuLabel>Coordenador</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
-                  onClick={() => setFilters((prev) => ({ ...prev, coordinator: "" }))}
+                  onClick={() =>
+                    setFilters((prev) => ({ ...prev, coordinator: "" }))
+                  }
                 >
                   Todos
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onClick={() => setFilters((prev) => ({ ...prev, coordinator: "with" }))}
+                  onClick={() =>
+                    setFilters((prev) => ({ ...prev, coordinator: "with" }))
+                  }
                 >
                   Com coordenador
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onClick={() => setFilters((prev) => ({ ...prev, coordinator: "without" }))}
+                  onClick={() =>
+                    setFilters((prev) => ({ ...prev, coordinator: "without" }))
+                  }
                 >
                   Sem coordenador
                 </DropdownMenuItem>
@@ -627,9 +632,9 @@ export function CourseTable({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                     </TableHead>
                   );
                 })}

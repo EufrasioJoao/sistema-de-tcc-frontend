@@ -126,9 +126,9 @@ export function AuthorReports({ data }: AuthorReportsProps) {
                                         height={80}
                                         fontSize={12}
                                     />
-                                    <YAxis />
-                                    <Tooltip />
-                                    <Bar dataKey="tccCount" fill="#3b82f6" />
+                                    <YAxis label={{ value: 'Quantidade', angle: -90, position: 'insideLeft' }} />
+                                    <Tooltip formatter={(value) => [`${value} TCCs`, 'Quantidade']} />
+                                    <Bar dataKey="tccCount" fill="#3b82f6" name="Quantidade" />
                                 </BarChart>
                             </ResponsiveContainer>
                         </CardContent>
@@ -162,7 +162,7 @@ export function AuthorReports({ data }: AuthorReportsProps) {
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                         ))}
                                     </Pie>
-                                    <Tooltip />
+                                    <Tooltip formatter={(value) => `${value} autores`} />
                                 </PieChart>
                             </ResponsiveContainer>
                         </CardContent>

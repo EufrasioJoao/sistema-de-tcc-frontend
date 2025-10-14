@@ -151,7 +151,6 @@ export interface TCC {
   keywords?: string | null;
   type: TccType;
   authorId: string;
-  supervisorId: string;
   courseId: string;
   fileId: string;
   defenseRecordFileId?: string | null;
@@ -159,13 +158,13 @@ export interface TCC {
   updatedAt: Date | string;
   deletedAt?: Date | string | null;
   author?: Student;
-  supervisor?: User;
+  supervisor?: string;
   course?: Course;
   file?: File;
   defenseRecordFile?: File | null;
 }
 
-// --- Custom Interfaces for UI --- 
+// --- Custom Interfaces for UI ---
 
 export interface Backup {
   id: string;

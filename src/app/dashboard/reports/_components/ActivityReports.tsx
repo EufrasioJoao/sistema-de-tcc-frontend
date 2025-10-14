@@ -100,9 +100,9 @@ export function ActivityReports({ data }: ActivityReportsProps) {
                                         height={80}
                                         fontSize={12}
                                     />
-                                    <YAxis />
-                                    <Tooltip />
-                                    <Bar dataKey="count" fill="#3b82f6" />
+                                    <YAxis label={{ value: 'Quantidade', angle: -90, position: 'insideLeft' }} />
+                                    <Tooltip formatter={(value) => [`${value} ações`, 'Quantidade']} />
+                                    <Bar dataKey="count" fill="#3b82f6" name="Quantidade" />
                                 </BarChart>
                             </ResponsiveContainer>
                         </CardContent>
@@ -127,9 +127,9 @@ export function ActivityReports({ data }: ActivityReportsProps) {
                                         dataKey="date"
                                         fontSize={12}
                                     />
-                                    <YAxis />
-                                    <Tooltip />
-                                    <Line type="monotone" dataKey="count" stroke="#10b981" strokeWidth={2} />
+                                    <YAxis label={{ value: 'Quantidade', angle: -90, position: 'insideLeft' }} />
+                                    <Tooltip formatter={(value) => [`${value} atividades`, 'Quantidade']} />
+                                    <Line type="monotone" dataKey="count" stroke="#10b981" strokeWidth={2} name="Quantidade" />
                                 </LineChart>
                             </ResponsiveContainer>
                         </CardContent>

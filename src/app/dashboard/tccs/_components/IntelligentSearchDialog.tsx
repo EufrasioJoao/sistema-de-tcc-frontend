@@ -37,10 +37,7 @@ interface SearchResult {
     firstName: string;
     lastName: string;
   };
-  supervisor: {
-    first_name: string;
-    last_name: string;
-  };
+  supervisor: string | null;
   course: {
     name: string;
   };
@@ -251,11 +248,12 @@ export function IntelligentSearchDialog({
                                   {result.author.firstName}{" "}
                                   {result.author.lastName}
                                 </div>
-                                <div className="flex items-center gap-1">
-                                  <BookOpen className="h-3 w-3" />
-                                  {result.supervisor.first_name}{" "}
-                                  {result.supervisor.last_name}
-                                </div>
+                                {result.supervisor && (
+                                  <div className="flex items-center gap-1">
+                                    <BookOpen className="h-3 w-3" />
+                                    {result.supervisor}
+                                  </div>
+                                )}
                                 <div className="flex items-center gap-1">
                                   <Calendar className="h-3 w-3" />
                                   {result.year}

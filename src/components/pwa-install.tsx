@@ -3,6 +3,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -21,12 +22,17 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 const PWAInstallPrompt = () => {
+  const pathname = usePathname();
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
   const [showIOSInstall, setShowIOSInstall] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
+    // Only show on exact dashboard page
+    if (pathname !== "/dashboard") {
+      return;
+    }
     const handleBeforeInstallPrompt = (e: BeforeInstallPromptEvent) => {
       e.preventDefault();
       setDeferredPrompt(e);
@@ -53,7 +59,7 @@ const PWAInstallPrompt = () => {
         handleBeforeInstallPrompt as any
       );
     };
-  }, []);
+  }, [pathname]);
 
   const handleInstall = async () => {
     if (deferredPrompt) {

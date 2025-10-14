@@ -54,8 +54,7 @@ export default function TCCsPage() {
       keywords: searchResult.keywords,
       type: searchResult.type,
       authorId: searchResult.authorId || searchResult.author?.id || "",
-      supervisorId:
-        searchResult.supervisorId || searchResult.supervisor?.id || "",
+      supervisor: searchResult.supervisor || null,
       courseId: searchResult.courseId || searchResult.course?.id || "",
       fileId: searchResult.fileId || searchResult.file?.id || null,
       defenseRecordFileId:
@@ -76,7 +75,6 @@ export default function TCCsPage() {
         updatedAt: searchResult.author.updatedAt || new Date().toISOString(),
         deletedAt: searchResult.author.deletedAt || null,
       },
-      supervisor: searchResult.supervisor,
       course: searchResult.course,
       file: searchResult.file || {
         id: "",

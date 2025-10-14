@@ -2,19 +2,15 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 import { useUserData } from "@/contexts/app-context";
 import {
   ChevronLeft,
   ChevronRight,
   AreaChart,
   LogOut,
-  Users,
   ChevronsUpDown,
   User,
   Settings2,
-  MoreHorizontal,
-  Eye,
   Home,
   BookCopy,
   GraduationCap,
@@ -32,7 +28,6 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   useSidebar,
-  SidebarMenuAction,
   SidebarFooter,
 } from "@/components/ui/sidebar";
 import {
@@ -56,8 +51,15 @@ const Sidebar = () => {
   const { user } = useUserData();
   const router = useRouter();
   const isMobile = useIsMobile();
-  const { setSidebarWidth } = useSidebar();
+  const { setSidebarWidth, setOpenMobile } = useSidebar();
   const [isExpanded, setIsExpanded] = useState(true);
+
+  // Close mobile sidebar when pathname changes
+  useEffect(() => {
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  }, [pathname, isMobile, setOpenMobile]);
   const allLinks = [
     {
       title: "Painel",
@@ -88,9 +90,12 @@ const Sidebar = () => {
       name: "courses",
       url: "/dashboard/courses",
       icon: BookCopy,
-      roles: [UserRoles.ADMIN, UserRoles.SISTEM_MANAGER,
-      UserRoles.COURSE_COORDENATOR,
-      UserRoles.ACADEMIC_REGISTER,],
+      roles: [
+        UserRoles.ADMIN,
+        UserRoles.SISTEM_MANAGER,
+        UserRoles.COURSE_COORDENATOR,
+        UserRoles.ACADEMIC_REGISTER,
+      ],
     },
     {
       title: "Estudantes",
@@ -108,8 +113,11 @@ const Sidebar = () => {
       name: "users",
       url: "/dashboard/users",
       icon: UserCog,
-      roles: [UserRoles.ADMIN,
-      UserRoles.SISTEM_MANAGER,],
+      roles: [
+        UserRoles.ADMIN,
+        UserRoles.SISTEM_MANAGER,
+        UserRoles.ACADEMIC_REGISTER,
+      ],
     },
     {
       title: "Relatórios",
@@ -120,7 +128,8 @@ const Sidebar = () => {
         UserRoles.ADMIN,
         UserRoles.SISTEM_MANAGER,
         UserRoles.COURSE_COORDENATOR,
-        UserRoles.ACADEMIC_REGISTER,],
+        UserRoles.ACADEMIC_REGISTER,
+      ],
     },
     {
       title: "Auditoria",
@@ -135,18 +144,6 @@ const Sidebar = () => {
       url: "/dashboard/backup",
       icon: Database,
       roles: [UserRoles.ADMIN, UserRoles.SISTEM_MANAGER],
-    },
-    {
-      title: "Configurações",
-      name: "settings",
-      url: "/dashboard/settings",
-      icon: Settings2,
-      roles: [
-        UserRoles.ADMIN,
-        UserRoles.SISTEM_MANAGER,
-        UserRoles.COURSE_COORDENATOR,
-        UserRoles.ACADEMIC_REGISTER,
-      ],
     },
   ];
 
@@ -205,15 +202,17 @@ const Sidebar = () => {
                     )}
                     <SidebarMenuButton
                       asChild
-                      className={`rounded-lg mb-1 font-medium transition-colors ${isActive
-                        ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                        : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                        }`}
+                      className={`rounded-lg mb-1 font-medium transition-colors ${
+                        isActive
+                          ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                          : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                      }`}
                     >
                       <Link
                         href={item.url}
-                        className={`flex items-center gap-3 p-3 ${!isExpanded ? "justify-center" : ""
-                          }`}
+                        className={`flex items-center gap-3 p-3 ${
+                          !isExpanded ? "justify-center" : ""
+                        }`}
                       >
                         <item.icon className="flex-shrink-0" />
                         {isExpanded && (

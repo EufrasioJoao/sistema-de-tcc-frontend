@@ -59,28 +59,6 @@ const createCoursesColumns = (
   onDelete?: (course: Course) => void
 ): ColumnDef<Course>[] => [
   {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Selecionar todos"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Selecionar linha"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
     accessorKey: "name",
     header: ({ column }) => (
       <Button
@@ -115,10 +93,10 @@ const createCoursesColumns = (
           <User className="h-4 w-4 text-blue-500" />
           <div>
             <p className="font-medium text-gray-900 dark:text-gray-100">
-              {course.coordinator.first_name} {course.coordinator.last_name}
+              {course?.coordinator?.first_name} {course?.coordinator?.last_name}
             </p>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              {course.coordinator.email}
+              {course?.coordinator?.email}
             </p>
           </div>
         </div>
