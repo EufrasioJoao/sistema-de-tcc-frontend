@@ -74,11 +74,16 @@ export function AddCourseDialog({ open, onOpenChange, onSuccess }: Props) {
       return;
     }
 
+    if (!coordinatorId || coordinatorId === "none") {
+      toast.error("Coordenador é obrigatório");
+      return;
+    }
+
     try {
       setLoading(true);
       const response = await api.post("/api/courses", {
         name: name.trim(),
-        coordinatorId: coordinatorId === "none" ? null : coordinatorId || null,
+        coordinatorId: coordinatorId,
       });
 
       if (response.data.success) {
@@ -97,7 +102,7 @@ export function AddCourseDialog({ open, onOpenChange, onSuccess }: Props) {
 
   const handleClose = () => {
     setName("");
-    setCoordinatorId("none");
+    setCoordinatorId("");
     onOpenChange(false);
   };
 
@@ -153,7 +158,7 @@ export function AddCourseDialog({ open, onOpenChange, onSuccess }: Props) {
               className="space-y-2"
             >
               <Label htmlFor="coordinator" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Coordenador (Opcional)
+                Coordenador *
               </Label>
               <Select value={coordinatorId} onValueChange={setCoordinatorId}>
                 <SelectTrigger className="bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700">
@@ -164,14 +169,6 @@ export function AddCourseDialog({ open, onOpenChange, onSuccess }: Props) {
                   } />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="none">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-6 h-6 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center">
-                        <UserCheck className="h-3 w-3 text-gray-400" />
-                      </div>
-                      <span>Sem coordenador</span>
-                    </div>
-                  </SelectItem>
                   {coordinators.map((coordinator) => (
                     <SelectItem key={coordinator.id} value={coordinator.id}>
                       <div className="flex items-center space-x-2">
