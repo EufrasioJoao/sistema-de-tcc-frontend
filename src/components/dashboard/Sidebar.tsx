@@ -73,18 +73,7 @@ const Sidebar = () => {
         UserRoles.ACADEMIC_REGISTER,
       ],
     },
-    {
-      title: "TCCs",
-      name: "tccs",
-      url: "/dashboard/tccs",
-      icon: FileText,
-      roles: [
-        UserRoles.ADMIN,
-        UserRoles.SISTEM_MANAGER,
-        UserRoles.COURSE_COORDENATOR,
-        UserRoles.ACADEMIC_REGISTER,
-      ],
-    },
+
     {
       title: "Cursos",
       name: "courses",
@@ -105,6 +94,18 @@ const Sidebar = () => {
       roles: [
         UserRoles.ADMIN,
         UserRoles.SISTEM_MANAGER,
+        UserRoles.ACADEMIC_REGISTER,
+      ],
+    },
+    {
+      title: "TCCs",
+      name: "tccs",
+      url: "/dashboard/tccs",
+      icon: FileText,
+      roles: [
+        UserRoles.ADMIN,
+        UserRoles.SISTEM_MANAGER,
+        UserRoles.COURSE_COORDENATOR,
         UserRoles.ACADEMIC_REGISTER,
       ],
     },
